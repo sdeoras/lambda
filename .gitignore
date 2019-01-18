@@ -1,0 +1,5 @@
+.idea
+*.so
+*.zip
+a.out
+lib
