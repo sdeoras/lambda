@@ -286,7 +286,7 @@ func TestRoute(t *testing.T) {
 	fmt.Println("response Status:", resp.Status)
 	fmt.Println("response Headers:", resp.Header)
 
-	if resp.Status != "200 OK" {
+	if resp.StatusCode != http.StatusOK {
 		t.Fatal("expected status 200 OK, got:", resp.Status)
 	}
 
@@ -341,7 +341,7 @@ func TestAuthOnly(t *testing.T) {
 	fmt.Println("response Status:", resp.Status)
 	fmt.Println("response Headers:", resp.Header)
 
-	if resp.Status != "200 OK" {
+	if resp.StatusCode != http.StatusOK {
 		t.Fatal("expected status 200 OK, got:", resp.Status)
 	}
 }
