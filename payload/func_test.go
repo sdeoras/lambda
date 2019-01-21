@@ -71,6 +71,7 @@ func handlerB(w http.ResponseWriter, r *http.Request) {
 	_, _ = fmt.Fprintf(w, "second called: %s", string(b))
 }
 
+// TestFirstFunc tests an internally routed func.
 func TestFirstFunc(t *testing.T) {
 	registry[handlerFuncA] = handlerA
 	registry[handlerFuncB] = handlerB
@@ -125,6 +126,7 @@ func TestFirstFunc(t *testing.T) {
 	}
 }
 
+// TestSecondFunc tests an internally routed function.
 func TestSecondFunc(t *testing.T) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
@@ -176,6 +178,7 @@ func TestSecondFunc(t *testing.T) {
 	}
 }
 
+// TestHandlerToken tests jwt token generation and parsing
 func TestHandlerToken(t *testing.T) {
 	// Create a request to pass to our handler. We don't have any query parameters for now, so we'll
 	// pass 'nil' as the third parameter.
@@ -239,6 +242,7 @@ func TestHandlerToken(t *testing.T) {
 	}
 }
 
+// TestRoute tests how to route after authenticating
 func TestRoute(t *testing.T) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
@@ -282,10 +286,62 @@ func TestRoute(t *testing.T) {
 	fmt.Println("response Status:", resp.Status)
 	fmt.Println("response Headers:", resp.Header)
 
+	if resp.Status != "200 OK" {
+		t.Fatal("expected status 200 OK, got:", resp.Status)
+	}
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	fmt.Println("response Body:", string(body))
+}
+
+// TestAuthOnly tests how to authenticate without routing
+func TestAuthOnly(t *testing.T) {
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+	// Set some claims
+	claims["user"] = "name"
+	// Sign and get the complete encoded token as a string
+	tokenString, err := token.SignedString(secretKey)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	data := new(Payload)
+	data.FuncData = new(FuncData)
+	data.FuncData.Id = HandlerAuthOnly
+	data.TokenString = tokenString
+
+	b, err := json.Marshal(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req, err := http.NewRequest("POST", "https://us-central1-"+
+		os.Getenv("GCLOUD_PROJECT_NAME")+
+		".cloudfunctions.net/router",
+		bytes.NewReader(b))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("X-Custom-Header", "myvalue")
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+
+	fmt.Println("response Status:", resp.Status)
+	fmt.Println("response Headers:", resp.Header)
+
+	if resp.Status != "200 OK" {
+		t.Fatal("expected status 200 OK, got:", resp.Status)
+	}
 }
