@@ -42,54 +42,63 @@ func helloWorld(w http.ResponseWriter, r *http.Request) {
 // function.
 func Route(w http.ResponseWriter, r *http.Request) {
 	if len(secretKey) == 0 {
-		http.Error(w, "jwt secret is invalid", http.StatusInternalServerError)
+		http.Error(w, "jwt secret is invalid on the server side. Got length = 0", http.StatusInternalServerError)
 		return
 	}
 
 	p := new(Payload)
 
 	if r.Body == nil {
-		http.Error(w, "req body is nil", http.StatusBadRequest)
+		http.Error(w, "http request body did not have valid content, Got nil", http.StatusBadRequest)
 		return
 	}
 
 	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w,
+			fmt.Sprintf("%s:%v", "read error from http request body", err),
+			http.StatusInternalServerError)
 		return
 	}
 	defer r.Body.Close()
 
+	if len(b) == 0 {
+		http.Error(w, "http request body did not have valid content. Got length = 0", http.StatusBadRequest)
+		return
+	}
+
 	if err := json.Unmarshal(b, p); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w,
+			fmt.Sprintf("%s:%v", "http request body did not have valid content format (JSON)", err),
+			http.StatusBadRequest)
 		return
 	}
 
 	if len(p.TokenString) == 0 {
-		http.Error(w, "token is not valid", http.StatusBadRequest)
+		http.Error(w, "JWT token in http request body is not valid. Got length = 0", http.StatusBadRequest)
 		return
 	}
 
 	token, err := jwt.Parse(p.TokenString, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method was used in JWT token making it invalid: %v", token.Header["alg"])
 		}
 
 		return secretKey, nil
 	})
 	if err != nil {
-		http.Error(w, fmt.Sprintf("%s:%v", "invalid token", err), http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf("%s:%v", "invalid JWT token", err), http.StatusBadRequest)
 		return
 	}
 
 	if token == nil {
-		http.Error(w, fmt.Sprintf("%s:%v", "invalid token", "nil"), http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf("%s:%v", "invalid JWT token", "nil"), http.StatusBadRequest)
 		return
 	}
 
 	if !token.Valid {
-		http.Error(w, fmt.Sprintf("%s:%s", "invalid token", "invalid"), http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf("%s:%s", "invalid JWT token", "invalid"), http.StatusBadRequest)
 		return
 	}
 
