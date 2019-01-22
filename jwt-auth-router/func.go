@@ -17,12 +17,12 @@ func init() {
 	once.Do(func() {
 		secretKey = []byte(os.Getenv("JWT_SECRET_KEY"))
 		registry = make(map[int]func(w http.ResponseWriter, r *http.Request))
-		registry[HandlerHelloWorld] = HelloWorld
+		registry[HandlerHelloWorld] = helloWorld
 	})
 }
 
-// HelloWorld is called after authentication via Route func.
-func HelloWorld(w http.ResponseWriter, r *http.Request) {
+// helloWorld is called after authentication via Route func.
+func helloWorld(w http.ResponseWriter, r *http.Request) {
 	if r.Body == nil {
 		http.Error(w, "req body is nil", http.StatusBadRequest)
 		return
