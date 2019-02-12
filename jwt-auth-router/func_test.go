@@ -29,8 +29,6 @@ func handlerToken(w http.ResponseWriter, r *http.Request) {
 	claims := token.Claims.(jwt.MapClaims)
 	// Set some claims
 	claims["foo"] = "bar"
-	//claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
-	// Sign and get the complete encoded token as a string
 	tokenString, err := token.SignedString(secretKey)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -78,9 +76,7 @@ func TestFirstFunc(t *testing.T) {
 
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
-	// Set some claims
 	claims["foo"] = "bar"
-	// Sign and get the complete encoded token as a string
 	tokenString, err := token.SignedString(secretKey)
 	if err != nil {
 		t.Fatal(err)
@@ -130,9 +126,7 @@ func TestFirstFunc(t *testing.T) {
 func TestSecondFunc(t *testing.T) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
-	// Set some claims
 	claims["foo"] = "bar"
-	// Sign and get the complete encoded token as a string
 	tokenString, err := token.SignedString(secretKey)
 	if err != nil {
 		t.Fatal(err)
@@ -204,7 +198,6 @@ func TestHandlerToken(t *testing.T) {
 	tokenString := rr.Body.String()
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		// Don't forget to validate the alg is what you expect:
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
@@ -246,9 +239,7 @@ func TestHandlerToken(t *testing.T) {
 func TestRoute(t *testing.T) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
-	// Set some claims
 	claims["user"] = "name"
-	// Sign and get the complete encoded token as a string
 	tokenString, err := token.SignedString(secretKey)
 	if err != nil {
 		t.Fatal(err)
@@ -302,9 +293,7 @@ func TestRoute(t *testing.T) {
 func TestAuthOnly(t *testing.T) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
-	// Set some claims
 	claims["user"] = "name"
-	// Sign and get the complete encoded token as a string
 	tokenString, err := token.SignedString(secretKey)
 	if err != nil {
 		t.Fatal(err)
