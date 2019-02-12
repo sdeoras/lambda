@@ -3,3 +3,4 @@
 *.zip
 a.out
 lib
+.DS_Store
