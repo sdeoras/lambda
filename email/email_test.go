@@ -2,7 +2,6 @@ package email
 
 import (
 	"io/ioutil"
-	"lambda/api"
 	"lambda/jwt"
 	"net/http"
 	"net/http/httptest"
@@ -10,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/sdeoras/lambda/api"
 )
 
 // TestSend_Local tests using locally spawned http test server.
