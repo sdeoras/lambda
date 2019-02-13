@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"lambda/api"
 	"lambda/jwt"
 	"net/http"
 	"os"
 	"strconv"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/sdeoras/lambda/api"
 	sendgrid "github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
