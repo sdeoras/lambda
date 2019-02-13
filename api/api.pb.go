@@ -23,9 +23,9 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-// SendRequest is the request to send email. This data is streamed from client
+// EmailRequest is the request to send email. This data is streamed from client
 // to the server.
-type SendRequest struct {
+type EmailRequest struct {
 	ToEmail              string   `protobuf:"bytes,1,opt,name=to_email,json=toEmail,proto3" json:"to_email,omitempty"`
 	ToName               string   `protobuf:"bytes,2,opt,name=to_name,json=toName,proto3" json:"to_name,omitempty"`
 	FromEmail            string   `protobuf:"bytes,3,opt,name=from_email,json=fromEmail,proto3" json:"from_email,omitempty"`
@@ -37,66 +37,66 @@ type SendRequest struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *SendRequest) Reset()         { *m = SendRequest{} }
-func (m *SendRequest) String() string { return proto.CompactTextString(m) }
-func (*SendRequest) ProtoMessage()    {}
-func (*SendRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_api_df55bd875f135c62, []int{0}
+func (m *EmailRequest) Reset()         { *m = EmailRequest{} }
+func (m *EmailRequest) String() string { return proto.CompactTextString(m) }
+func (*EmailRequest) ProtoMessage()    {}
+func (*EmailRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_api_98d15038169c4a74, []int{0}
 }
-func (m *SendRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SendRequest.Unmarshal(m, b)
+func (m *EmailRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_EmailRequest.Unmarshal(m, b)
 }
-func (m *SendRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SendRequest.Marshal(b, m, deterministic)
+func (m *EmailRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_EmailRequest.Marshal(b, m, deterministic)
 }
-func (dst *SendRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SendRequest.Merge(dst, src)
+func (dst *EmailRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EmailRequest.Merge(dst, src)
 }
-func (m *SendRequest) XXX_Size() int {
-	return xxx_messageInfo_SendRequest.Size(m)
+func (m *EmailRequest) XXX_Size() int {
+	return xxx_messageInfo_EmailRequest.Size(m)
 }
-func (m *SendRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SendRequest.DiscardUnknown(m)
+func (m *EmailRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_EmailRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SendRequest proto.InternalMessageInfo
+var xxx_messageInfo_EmailRequest proto.InternalMessageInfo
 
-func (m *SendRequest) GetToEmail() string {
+func (m *EmailRequest) GetToEmail() string {
 	if m != nil {
 		return m.ToEmail
 	}
 	return ""
 }
 
-func (m *SendRequest) GetToName() string {
+func (m *EmailRequest) GetToName() string {
 	if m != nil {
 		return m.ToName
 	}
 	return ""
 }
 
-func (m *SendRequest) GetFromEmail() string {
+func (m *EmailRequest) GetFromEmail() string {
 	if m != nil {
 		return m.FromEmail
 	}
 	return ""
 }
 
-func (m *SendRequest) GetFromName() string {
+func (m *EmailRequest) GetFromName() string {
 	if m != nil {
 		return m.FromName
 	}
 	return ""
 }
 
-func (m *SendRequest) GetSubject() string {
+func (m *EmailRequest) GetSubject() string {
 	if m != nil {
 		return m.Subject
 	}
 	return ""
 }
 
-func (m *SendRequest) GetBody() []byte {
+func (m *EmailRequest) GetBody() []byte {
 	if m != nil {
 		return m.Body
 	}
@@ -104,7 +104,7 @@ func (m *SendRequest) GetBody() []byte {
 }
 
 // SendResponse is the response from the server after email is sent.
-type SendResponse struct {
+type EmailResponse struct {
 	StatusCode           int64                    `protobuf:"varint,1,opt,name=status_code,json=statusCode,proto3" json:"status_code,omitempty"`
 	Body                 string                   `protobuf:"bytes,2,opt,name=body,proto3" json:"body,omitempty"`
 	Headers              map[string]*ListOfString `protobuf:"bytes,3,rep,name=headers,proto3" json:"headers,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
@@ -113,45 +113,45 @@ type SendResponse struct {
 	XXX_sizecache        int32                    `json:"-"`
 }
 
-func (m *SendResponse) Reset()         { *m = SendResponse{} }
-func (m *SendResponse) String() string { return proto.CompactTextString(m) }
-func (*SendResponse) ProtoMessage()    {}
-func (*SendResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_api_df55bd875f135c62, []int{1}
+func (m *EmailResponse) Reset()         { *m = EmailResponse{} }
+func (m *EmailResponse) String() string { return proto.CompactTextString(m) }
+func (*EmailResponse) ProtoMessage()    {}
+func (*EmailResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_api_98d15038169c4a74, []int{1}
 }
-func (m *SendResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SendResponse.Unmarshal(m, b)
+func (m *EmailResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_EmailResponse.Unmarshal(m, b)
 }
-func (m *SendResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SendResponse.Marshal(b, m, deterministic)
+func (m *EmailResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_EmailResponse.Marshal(b, m, deterministic)
 }
-func (dst *SendResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SendResponse.Merge(dst, src)
+func (dst *EmailResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EmailResponse.Merge(dst, src)
 }
-func (m *SendResponse) XXX_Size() int {
-	return xxx_messageInfo_SendResponse.Size(m)
+func (m *EmailResponse) XXX_Size() int {
+	return xxx_messageInfo_EmailResponse.Size(m)
 }
-func (m *SendResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_SendResponse.DiscardUnknown(m)
+func (m *EmailResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_EmailResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SendResponse proto.InternalMessageInfo
+var xxx_messageInfo_EmailResponse proto.InternalMessageInfo
 
-func (m *SendResponse) GetStatusCode() int64 {
+func (m *EmailResponse) GetStatusCode() int64 {
 	if m != nil {
 		return m.StatusCode
 	}
 	return 0
 }
 
-func (m *SendResponse) GetBody() string {
+func (m *EmailResponse) GetBody() string {
 	if m != nil {
 		return m.Body
 	}
 	return ""
 }
 
-func (m *SendResponse) GetHeaders() map[string]*ListOfString {
+func (m *EmailResponse) GetHeaders() map[string]*ListOfString {
 	if m != nil {
 		return m.Headers
 	}
@@ -170,7 +170,7 @@ func (m *ListOfString) Reset()         { *m = ListOfString{} }
 func (m *ListOfString) String() string { return proto.CompactTextString(m) }
 func (*ListOfString) ProtoMessage()    {}
 func (*ListOfString) Descriptor() ([]byte, []int) {
-	return fileDescriptor_api_df55bd875f135c62, []int{2}
+	return fileDescriptor_api_98d15038169c4a74, []int{2}
 }
 func (m *ListOfString) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ListOfString.Unmarshal(m, b)
@@ -197,11 +197,113 @@ func (m *ListOfString) GetValue() []string {
 	return nil
 }
 
+type InferImageRequest struct {
+	Data                 []byte   `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
+	ModelPath            string   `protobuf:"bytes,2,opt,name=model_path,json=modelPath,proto3" json:"model_path,omitempty"`
+	LabelPath            string   `protobuf:"bytes,3,opt,name=label_path,json=labelPath,proto3" json:"label_path,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *InferImageRequest) Reset()         { *m = InferImageRequest{} }
+func (m *InferImageRequest) String() string { return proto.CompactTextString(m) }
+func (*InferImageRequest) ProtoMessage()    {}
+func (*InferImageRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_api_98d15038169c4a74, []int{3}
+}
+func (m *InferImageRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_InferImageRequest.Unmarshal(m, b)
+}
+func (m *InferImageRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_InferImageRequest.Marshal(b, m, deterministic)
+}
+func (dst *InferImageRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_InferImageRequest.Merge(dst, src)
+}
+func (m *InferImageRequest) XXX_Size() int {
+	return xxx_messageInfo_InferImageRequest.Size(m)
+}
+func (m *InferImageRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_InferImageRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_InferImageRequest proto.InternalMessageInfo
+
+func (m *InferImageRequest) GetData() []byte {
+	if m != nil {
+		return m.Data
+	}
+	return nil
+}
+
+func (m *InferImageRequest) GetModelPath() string {
+	if m != nil {
+		return m.ModelPath
+	}
+	return ""
+}
+
+func (m *InferImageRequest) GetLabelPath() string {
+	if m != nil {
+		return m.LabelPath
+	}
+	return ""
+}
+
+type InferImageResponse struct {
+	Label                string   `protobuf:"bytes,1,opt,name=label,proto3" json:"label,omitempty"`
+	Probability          int64    `protobuf:"varint,2,opt,name=probability,proto3" json:"probability,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *InferImageResponse) Reset()         { *m = InferImageResponse{} }
+func (m *InferImageResponse) String() string { return proto.CompactTextString(m) }
+func (*InferImageResponse) ProtoMessage()    {}
+func (*InferImageResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_api_98d15038169c4a74, []int{4}
+}
+func (m *InferImageResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_InferImageResponse.Unmarshal(m, b)
+}
+func (m *InferImageResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_InferImageResponse.Marshal(b, m, deterministic)
+}
+func (dst *InferImageResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_InferImageResponse.Merge(dst, src)
+}
+func (m *InferImageResponse) XXX_Size() int {
+	return xxx_messageInfo_InferImageResponse.Size(m)
+}
+func (m *InferImageResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_InferImageResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_InferImageResponse proto.InternalMessageInfo
+
+func (m *InferImageResponse) GetLabel() string {
+	if m != nil {
+		return m.Label
+	}
+	return ""
+}
+
+func (m *InferImageResponse) GetProbability() int64 {
+	if m != nil {
+		return m.Probability
+	}
+	return 0
+}
+
 func init() {
-	proto.RegisterType((*SendRequest)(nil), "api.SendRequest")
-	proto.RegisterType((*SendResponse)(nil), "api.SendResponse")
-	proto.RegisterMapType((map[string]*ListOfString)(nil), "api.SendResponse.HeadersEntry")
+	proto.RegisterType((*EmailRequest)(nil), "api.EmailRequest")
+	proto.RegisterType((*EmailResponse)(nil), "api.EmailResponse")
+	proto.RegisterMapType((map[string]*ListOfString)(nil), "api.EmailResponse.HeadersEntry")
 	proto.RegisterType((*ListOfString)(nil), "api.ListOfString")
+	proto.RegisterType((*InferImageRequest)(nil), "api.InferImageRequest")
+	proto.RegisterType((*InferImageResponse)(nil), "api.InferImageResponse")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -212,127 +314,136 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion4
 
-// EmailClient is the client API for Email service.
+// ApiClient is the client API for Api service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type EmailClient interface {
-	Send(ctx context.Context, opts ...grpc.CallOption) (Email_SendClient, error)
+type ApiClient interface {
+	// Email service sends email
+	Email(ctx context.Context, in *EmailRequest, opts ...grpc.CallOption) (*EmailResponse, error)
+	// InferImage applies trained model on input image for inferring labels
+	InferImage(ctx context.Context, in *InferImageRequest, opts ...grpc.CallOption) (*InferImageResponse, error)
 }
 
-type emailClient struct {
+type apiClient struct {
 	cc *grpc.ClientConn
 }
 
-func NewEmailClient(cc *grpc.ClientConn) EmailClient {
-	return &emailClient{cc}
+func NewApiClient(cc *grpc.ClientConn) ApiClient {
+	return &apiClient{cc}
 }
 
-func (c *emailClient) Send(ctx context.Context, opts ...grpc.CallOption) (Email_SendClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Email_serviceDesc.Streams[0], "/api.Email/Send", opts...)
+func (c *apiClient) Email(ctx context.Context, in *EmailRequest, opts ...grpc.CallOption) (*EmailResponse, error) {
+	out := new(EmailResponse)
+	err := c.cc.Invoke(ctx, "/api.Api/Email", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &emailSendClient{stream}
-	return x, nil
+	return out, nil
 }
 
-type Email_SendClient interface {
-	Send(*SendRequest) error
-	CloseAndRecv() (*SendResponse, error)
-	grpc.ClientStream
-}
-
-type emailSendClient struct {
-	grpc.ClientStream
-}
-
-func (x *emailSendClient) Send(m *SendRequest) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *emailSendClient) CloseAndRecv() (*SendResponse, error) {
-	if err := x.ClientStream.CloseSend(); err != nil {
+func (c *apiClient) InferImage(ctx context.Context, in *InferImageRequest, opts ...grpc.CallOption) (*InferImageResponse, error) {
+	out := new(InferImageResponse)
+	err := c.cc.Invoke(ctx, "/api.Api/InferImage", in, out, opts...)
+	if err != nil {
 		return nil, err
 	}
-	m := new(SendResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
+	return out, nil
+}
+
+// ApiServer is the server API for Api service.
+type ApiServer interface {
+	// Email service sends email
+	Email(context.Context, *EmailRequest) (*EmailResponse, error)
+	// InferImage applies trained model on input image for inferring labels
+	InferImage(context.Context, *InferImageRequest) (*InferImageResponse, error)
+}
+
+func RegisterApiServer(s *grpc.Server, srv ApiServer) {
+	s.RegisterService(&_Api_serviceDesc, srv)
+}
+
+func _Api_Email_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EmailRequest)
+	if err := dec(in); err != nil {
 		return nil, err
 	}
-	return m, nil
+	if interceptor == nil {
+		return srv.(ApiServer).Email(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.Api/Email",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServer).Email(ctx, req.(*EmailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-// EmailServer is the server API for Email service.
-type EmailServer interface {
-	Send(Email_SendServer) error
-}
-
-func RegisterEmailServer(s *grpc.Server, srv EmailServer) {
-	s.RegisterService(&_Email_serviceDesc, srv)
-}
-
-func _Email_Send_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(EmailServer).Send(&emailSendServer{stream})
-}
-
-type Email_SendServer interface {
-	SendAndClose(*SendResponse) error
-	Recv() (*SendRequest, error)
-	grpc.ServerStream
-}
-
-type emailSendServer struct {
-	grpc.ServerStream
-}
-
-func (x *emailSendServer) SendAndClose(m *SendResponse) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *emailSendServer) Recv() (*SendRequest, error) {
-	m := new(SendRequest)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
+func _Api_InferImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InferImageRequest)
+	if err := dec(in); err != nil {
 		return nil, err
 	}
-	return m, nil
+	if interceptor == nil {
+		return srv.(ApiServer).InferImage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.Api/InferImage",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServer).InferImage(ctx, req.(*InferImageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-var _Email_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "api.Email",
-	HandlerType: (*EmailServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams: []grpc.StreamDesc{
+var _Api_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "api.Api",
+	HandlerType: (*ApiServer)(nil),
+	Methods: []grpc.MethodDesc{
 		{
-			StreamName:    "Send",
-			Handler:       _Email_Send_Handler,
-			ClientStreams: true,
+			MethodName: "Email",
+			Handler:    _Api_Email_Handler,
+		},
+		{
+			MethodName: "InferImage",
+			Handler:    _Api_InferImage_Handler,
 		},
 	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "api.proto",
 }
 
-func init() { proto.RegisterFile("api.proto", fileDescriptor_api_df55bd875f135c62) }
+func init() { proto.RegisterFile("api.proto", fileDescriptor_api_98d15038169c4a74) }
 
-var fileDescriptor_api_df55bd875f135c62 = []byte{
-	// 328 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x64, 0x51, 0x4d, 0x4b, 0xc3, 0x40,
-	0x10, 0x75, 0xbb, 0x6d, 0xd3, 0x4c, 0x72, 0x68, 0x17, 0xc1, 0x58, 0x51, 0x43, 0x10, 0xcc, 0xa9,
-	0x42, 0xbd, 0x14, 0xaf, 0x52, 0xf0, 0xe0, 0x07, 0xa4, 0x3f, 0xa0, 0x6c, 0x9b, 0xa9, 0x46, 0x9b,
-	0x6c, 0xcc, 0x6e, 0x84, 0xfc, 0x26, 0xff, 0x8a, 0x3f, 0x4a, 0x76, 0x37, 0x95, 0x80, 0xb7, 0x99,
-	0x79, 0xf3, 0xde, 0xbe, 0x7d, 0x03, 0x2e, 0x2f, 0xb3, 0x59, 0x59, 0x09, 0x25, 0x18, 0xe5, 0x65,
-	0x16, 0x7d, 0x13, 0xf0, 0x56, 0x58, 0xa4, 0x09, 0x7e, 0xd6, 0x28, 0x15, 0x3b, 0x85, 0x91, 0x12,
-	0x6b, 0xcc, 0x79, 0xb6, 0x0f, 0x48, 0x48, 0x62, 0x37, 0x71, 0x94, 0x58, 0xea, 0x96, 0x9d, 0x80,
-	0xa3, 0xc4, 0xba, 0xe0, 0x39, 0x06, 0x3d, 0x83, 0x0c, 0x95, 0x78, 0xe6, 0x39, 0xb2, 0x73, 0x80,
-	0x5d, 0x25, 0xf2, 0x96, 0x45, 0x0d, 0xe6, 0xea, 0x89, 0xe5, 0x9d, 0x81, 0x69, 0x2c, 0xb3, 0x6f,
-	0xd0, 0x91, 0x1e, 0x18, 0x6e, 0x00, 0x8e, 0xac, 0x37, 0xef, 0xb8, 0x55, 0xc1, 0xc0, 0x3e, 0xd7,
-	0xb6, 0x8c, 0x41, 0x7f, 0x23, 0xd2, 0x26, 0x18, 0x86, 0x24, 0xf6, 0x13, 0x53, 0x47, 0x3f, 0x04,
-	0x7c, 0xeb, 0x56, 0x96, 0xa2, 0x90, 0xc8, 0x2e, 0xc1, 0x93, 0x8a, 0xab, 0x5a, 0xae, 0xb7, 0x22,
-	0x45, 0xe3, 0x98, 0x26, 0x60, 0x47, 0xf7, 0x22, 0xc5, 0x3f, 0x15, 0xeb, 0xd8, 0xd4, 0x6c, 0x01,
-	0xce, 0x1b, 0xf2, 0x14, 0x2b, 0x19, 0xd0, 0x90, 0xc6, 0xde, 0xfc, 0x62, 0xa6, 0x53, 0xe9, 0x0a,
-	0xcf, 0x1e, 0xec, 0xc2, 0xb2, 0x50, 0x55, 0x93, 0x1c, 0xd6, 0xa7, 0x4f, 0xe0, 0x77, 0x01, 0x36,
-	0x06, 0xfa, 0x81, 0x4d, 0x1b, 0x94, 0x2e, 0xd9, 0x35, 0x0c, 0xbe, 0xf8, 0xbe, 0xb6, 0x11, 0x79,
-	0xf3, 0x89, 0x51, 0x7e, 0xcc, 0xa4, 0x7a, 0xd9, 0xad, 0x54, 0x95, 0x15, 0xaf, 0x89, 0xc5, 0xef,
-	0x7a, 0x0b, 0x12, 0x5d, 0x81, 0xdf, 0x85, 0xd8, 0xf1, 0x81, 0x4c, 0x42, 0x1a, 0xbb, 0xed, 0xe6,
-	0x7c, 0x01, 0x03, 0x1b, 0xe4, 0x0d, 0xf4, 0xb5, 0x47, 0x36, 0xee, 0xd8, 0x35, 0x57, 0x9b, 0x4e,
-	0xfe, 0x7d, 0x20, 0x3a, 0x8a, 0xc9, 0x66, 0x68, 0x0e, 0x7d, 0xfb, 0x1b, 0x00, 0x00, 0xff, 0xff,
-	0x6a, 0xd9, 0xed, 0xf6, 0xf5, 0x01, 0x00, 0x00,
+var fileDescriptor_api_98d15038169c4a74 = []byte{
+	// 425 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x64, 0x52, 0xdd, 0x8a, 0xd3, 0x50,
+	0x10, 0x36, 0x7b, 0xfa, 0xb3, 0x99, 0x46, 0xb0, 0xc3, 0xe2, 0xc6, 0x8a, 0x6c, 0x08, 0x82, 0xbd,
+	0x2a, 0x52, 0x6f, 0xd4, 0x1b, 0x11, 0x59, 0x70, 0x61, 0xfd, 0x21, 0x3e, 0x40, 0x39, 0xd9, 0x4c,
+	0xdb, 0x68, 0x92, 0x13, 0x93, 0xa9, 0xd8, 0x77, 0xf2, 0x59, 0x7c, 0x26, 0xc9, 0x9c, 0x13, 0x8d,
+	0xf4, 0x6e, 0xce, 0xf7, 0x7d, 0xf3, 0xf7, 0xcd, 0x01, 0x5f, 0xd7, 0xf9, 0xaa, 0x6e, 0x0c, 0x1b,
+	0x54, 0xba, 0xce, 0xe3, 0x5f, 0x1e, 0x04, 0xd7, 0xa5, 0xce, 0x8b, 0x84, 0xbe, 0x1f, 0xa8, 0x65,
+	0x7c, 0x04, 0xe7, 0x6c, 0x36, 0xd4, 0x41, 0xa1, 0x17, 0x79, 0x4b, 0x3f, 0x99, 0xb2, 0x11, 0x05,
+	0x5e, 0xc2, 0x94, 0xcd, 0xa6, 0xd2, 0x25, 0x85, 0x67, 0xc2, 0x4c, 0xd8, 0x7c, 0xd4, 0x25, 0xe1,
+	0x13, 0x80, 0x6d, 0x63, 0x4a, 0x97, 0xa5, 0x84, 0xf3, 0x3b, 0xc4, 0xe6, 0x3d, 0x06, 0x79, 0xd8,
+	0xcc, 0x91, 0xb0, 0xe7, 0x1d, 0x20, 0xb9, 0x21, 0x4c, 0xdb, 0x43, 0xfa, 0x95, 0xee, 0x38, 0x1c,
+	0xdb, 0x76, 0xee, 0x89, 0x08, 0xa3, 0xd4, 0x64, 0xc7, 0x70, 0x12, 0x79, 0xcb, 0x20, 0x91, 0x38,
+	0xfe, 0xed, 0xc1, 0x7d, 0x37, 0x6e, 0x5b, 0x9b, 0xaa, 0x25, 0xbc, 0x82, 0x59, 0xcb, 0x9a, 0x0f,
+	0xed, 0xe6, 0xce, 0x64, 0x24, 0x23, 0xab, 0x04, 0x2c, 0xf4, 0xce, 0x64, 0xf4, 0xb7, 0x8c, 0x1d,
+	0x59, 0x62, 0x7c, 0x05, 0xd3, 0x3d, 0xe9, 0x8c, 0x9a, 0x36, 0x54, 0x91, 0x5a, 0xce, 0xd6, 0x57,
+	0xab, 0xce, 0x97, 0xff, 0x2a, 0xaf, 0xde, 0x5b, 0xc5, 0x75, 0xc5, 0xcd, 0x31, 0xe9, 0xf5, 0x8b,
+	0x0f, 0x10, 0x0c, 0x09, 0x7c, 0x00, 0xea, 0x1b, 0x1d, 0x9d, 0x55, 0x5d, 0x88, 0xcf, 0x60, 0xfc,
+	0x43, 0x17, 0x07, 0x6b, 0xd2, 0x6c, 0x3d, 0x97, 0xd2, 0xb7, 0x79, 0xcb, 0x9f, 0xb6, 0x5f, 0xb8,
+	0xc9, 0xab, 0x5d, 0x62, 0xf9, 0xd7, 0x67, 0x2f, 0xbd, 0xf8, 0x29, 0x04, 0x43, 0x0a, 0x2f, 0xfa,
+	0x64, 0x2f, 0x52, 0x4b, 0xdf, 0x29, 0x63, 0x82, 0xf9, 0x4d, 0xb5, 0xa5, 0xe6, 0xa6, 0xd4, 0x3b,
+	0xea, 0x2f, 0x85, 0x30, 0xca, 0x34, 0x6b, 0x69, 0x1d, 0x24, 0x12, 0x77, 0x97, 0x28, 0x4d, 0x46,
+	0xc5, 0xa6, 0xd6, 0xbc, 0x77, 0x2b, 0xfb, 0x82, 0x7c, 0xd6, 0xbc, 0xef, 0xe8, 0x42, 0xa7, 0x3d,
+	0xed, 0x0e, 0x25, 0x48, 0x47, 0xc7, 0xb7, 0x80, 0xc3, 0x36, 0xce, 0xe1, 0x0b, 0x18, 0x8b, 0xc4,
+	0xed, 0x68, 0x1f, 0x18, 0xc1, 0xac, 0x6e, 0x4c, 0xaa, 0xd3, 0xbc, 0xc8, 0xd9, 0xba, 0xab, 0x92,
+	0x21, 0xb4, 0xfe, 0x09, 0xea, 0x6d, 0x9d, 0xe3, 0x73, 0x18, 0xdb, 0x6f, 0x30, 0x1f, 0x7a, 0x2c,
+	0x2b, 0x2c, 0xf0, 0xd4, 0xf6, 0xf8, 0x1e, 0xbe, 0x01, 0xf8, 0x37, 0x06, 0x3e, 0x14, 0xcd, 0xc9,
+	0xfa, 0x8b, 0xcb, 0x13, 0xbc, 0x2f, 0x90, 0x4e, 0xe4, 0x83, 0xbf, 0xf8, 0x13, 0x00, 0x00, 0xff,
+	0xff, 0x93, 0x15, 0xfd, 0x90, 0xed, 0x02, 0x00, 0x00,
 }
