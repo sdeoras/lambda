@@ -3,9 +3,12 @@ package cmd
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"log"
 	"sort"
+
+	"github.com/sdeoras/lambda/api"
 
 	"github.com/sdeoras/comp/cloud"
 	"github.com/sdeoras/comp/image"
@@ -149,7 +152,15 @@ func label(cmd *cobra.Command, args []string) error {
 			sOut[j] = s[j].Index
 		}
 
-		fmt.Println(fileName, labels[sOut[0]])
+		response := new(api.InferImageResponse)
+		response.Label = labels[sOut[0]]
+		jb, err := json.Marshal(response)
+		if err != nil {
+			return err
+		}
+
+		fmt.Println(string(jb))
+		break
 	}
 	return nil
 }

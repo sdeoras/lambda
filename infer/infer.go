@@ -2,12 +2,14 @@ package infer
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"lambda/jwt"
 	"net/http"
 	"os"
 	"os/exec"
+	"sync"
 
 	"cloud.google.com/go/storage"
 	"github.com/golang/protobuf/proto"
@@ -15,8 +17,20 @@ import (
 )
 
 const (
-	Name = "infer"
+	ProjectName = "lambda"
+	Name        = "infer"
 )
+
+var (
+	once sync.Once
+)
+
+func init() {
+	once.Do(func() {
+		_ = os.Setenv("LD_LIBRARY_PATH", "/srv/files/bin/src/infer/lib:"+
+			os.Getenv("LD_LIBRARY_PATH"))
+	})
+}
 
 func writeToGS(ctx context.Context, bucketName, fileName string, buffer []byte) (int, error) {
 	// Creates a client.
@@ -72,12 +86,26 @@ func InferImage(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// executing the shell binary a.out produces json output that can be unmarshal'ed into
+	// infer response object
 	b, err = exec.Command("/srv/files/bin/src/infer/a.out", "label",
 		"--model", inferRequest.ModelPath,
 		"--label", inferRequest.LabelPath,
 		imagePath).Output()
 	if err != nil {
 		http.Error(w, fmt.Sprintf("could not successfull run infer:%v", err), http.StatusInternalServerError)
+		return
+	}
+
+	response := new(api.InferImageResponse)
+	if err := json.Unmarshal(b, response); err != nil {
+		http.Error(w, fmt.Sprintf("could not successfull unmarshal into response:%v", err), http.StatusInternalServerError)
+		return
+	}
+
+	b, err = proto.Marshal(response)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("could not successfull marshal response into proto:%v", err), http.StatusInternalServerError)
 		return
 	}
 
