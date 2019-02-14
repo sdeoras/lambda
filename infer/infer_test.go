@@ -50,8 +50,6 @@ func TestInfer_Remote(t *testing.T) {
 		t.Fatalf("%s:%s. Mesg:%s", "expected status 200 OK, got", resp.Status, string(b))
 	}
 
-	fmt.Println(string(b))
-
 	response := new(api.InferImageResponse)
 	if err := proto.Unmarshal(b, response); err != nil {
 		t.Fatal(err)
