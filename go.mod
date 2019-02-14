@@ -3,6 +3,7 @@ module lambda
 require (
 	cloud.google.com/go v0.36.0
 	github.com/golang/protobuf v1.2.0
+	github.com/google/uuid v1.1.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/sdeoras/comp v0.1.2
 	github.com/sdeoras/httprouter v0.0.0
