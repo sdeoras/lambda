@@ -13,6 +13,7 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/golang/protobuf/proto"
+	"github.com/google/uuid"
 	"github.com/sdeoras/lambda/api"
 )
 
@@ -69,14 +70,16 @@ func InferImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fileName := uuid.New().String() + ".jpg"
+
 	inferRequest.ModelPath = "gs://" + os.Getenv("LAMBDA_BUCKET") + "/" + inferRequest.ModelPath
 	inferRequest.LabelPath = "gs://" + os.Getenv("LAMBDA_BUCKET") + "/" + inferRequest.LabelPath
-	imagePath := "gs://" + os.Getenv("LAMBDA_BUCKET") + "/monitor.jpg"
+	filePath := "gs://" + os.Getenv("LAMBDA_BUCKET") + "/" + fileName
 
 	// write file to gcs
 	if n, err := writeToGS(context.Background(),
 		os.Getenv("LAMBDA_BUCKET"),
-		"monitor.jpg", inferRequest.Data); err != nil {
+		fileName, inferRequest.Data); err != nil {
 		http.Error(w, fmt.Sprintf("could not successfull write to gcs bucket:%v", err), http.StatusInternalServerError)
 		return
 	} else {
@@ -91,7 +94,7 @@ func InferImage(w http.ResponseWriter, r *http.Request) {
 	b, err = exec.Command("/srv/files/bin/src/infer/a.out", "label",
 		"--model", inferRequest.ModelPath,
 		"--label", inferRequest.LabelPath,
-		imagePath).Output()
+		filePath).Output()
 	if err != nil {
 		http.Error(w, fmt.Sprintf("could not successfull run infer:%v", err), http.StatusInternalServerError)
 		return
