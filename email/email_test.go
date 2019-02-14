@@ -14,7 +14,7 @@ import (
 
 // TestSend_Local tests using locally spawned http test server.
 func TestSend_Local(t *testing.T) {
-	sendRequest := &api.SendRequest{
+	sendRequest := &api.EmailRequest{
 		FromName:  os.Getenv("EMAIL_FROM_NAME"),
 		FromEmail: os.Getenv("EMAIL_FROM_EMAIL"),
 		ToName:    os.Getenv("EMAIL_TO_NAME"),
@@ -48,7 +48,7 @@ func TestSend_Local(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	sendResponse := new(api.SendResponse)
+	sendResponse := new(api.EmailResponse)
 	if err := proto.Unmarshal(b, sendResponse); err != nil {
 		t.Fatal(err)
 	}
@@ -60,7 +60,7 @@ func TestSend_Local(t *testing.T) {
 
 // TestSend_Remote expects google cloud function to be up and running and it tests against that.
 func TestSend_Remote(t *testing.T) {
-	sendRequest := &api.SendRequest{
+	sendRequest := &api.EmailRequest{
 		FromName:  os.Getenv("EMAIL_FROM_NAME"),
 		FromEmail: os.Getenv("EMAIL_FROM_EMAIL"),
 		ToName:    os.Getenv("EMAIL_TO_NAME"),
@@ -94,7 +94,7 @@ func TestSend_Remote(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	sendResponse := new(api.SendResponse)
+	sendResponse := new(api.EmailResponse)
 	if err := proto.Unmarshal(b, sendResponse); err != nil {
 		t.Fatal(err)
 	}
