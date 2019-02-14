@@ -10,7 +10,8 @@ gcloud functions deploy lambda \
     --region=us-central1 \
     --trigger-http \
     --entry-point=Lambda \
-    --runtime go111 \
+    --runtime=go111 \
+    --memory=2048MB \
     --set-env-vars=JWT_SECRET_KEY="${JWT_SECRET_KEY}" \
     --set-env-vars=GOOGLE_GCF_DOMAIN="${GOOGLE_GCF_DOMAIN}" \
     --set-env-vars=GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID}" \
