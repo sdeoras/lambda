@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 go mod vendor
-zip -r payload.zip lambda.go api jwt email vendor
+zip -r payload.zip lambda.go bin api jwt email infer vendor
 rm -rf vendor
 gsutil cp payload.zip gs://${CLOUD_FUNCTIONS_BUCKET}
 rm -rf payload.zip
@@ -21,4 +21,5 @@ gcloud functions deploy lambda \
     --set-env-vars=EMAIL_FROM_EMAIL="${EMAIL_FROM_EMAIL}" \
     --set-env-vars=EMAIL_TO_NAME="${EMAIL_TO_NAME}" \
     --set-env-vars=EMAIL_TO_EMAIL="${EMAIL_TO_EMAIL}" \
+    --set-env-vars=LAMBDA_BUCKET="${LAMBDA_BUCKET}" \
     --source=gs://${CLOUD_FUNCTIONS_BUCKET}/payload.zip

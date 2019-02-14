@@ -21,11 +21,6 @@ const (
 	Name        = "email"
 )
 
-// Health returns ok
-func Health(w http.ResponseWriter, r *http.Request) {
-	_, _ = fmt.Fprintf(w, "ok")
-}
-
 // Send sends email via sendgrid api
 func Send(w http.ResponseWriter, r *http.Request) {
 	// validate input request
@@ -42,7 +37,7 @@ func Send(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	sendRequest := new(api.SendRequest)
+	sendRequest := new(api.EmailRequest)
 	if err := proto.Unmarshal(b, sendRequest); err != nil {
 		http.Error(w, fmt.Sprintf("could not unmarshal email send request:%v", err), http.StatusBadRequest)
 		return
@@ -61,7 +56,7 @@ func Send(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("could not send email request:%v", err), http.StatusInternalServerError)
 		return
 	} else {
-		sendResponse := new(api.SendResponse)
+		sendResponse := new(api.EmailResponse)
 
 		sendResponse.StatusCode = int64(response.StatusCode)
 		sendResponse.Body = response.Body
