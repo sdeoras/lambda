@@ -5,8 +5,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/sdeoras/dispatcher"
+	"github.com/sirupsen/logrus"
 	"log"
 	"sort"
+	"time"
 
 	"github.com/sdeoras/lambda/api"
 
@@ -39,23 +42,30 @@ func (s scores) Swap(i, j int) {
 func label(cmd *cobra.Command, args []string) error {
 	_ = viper.BindPFlag("/label/modelFile", cmd.Flags().Lookup("model"))
 	_ = viper.BindPFlag("/label/labelFile", cmd.Flags().Lookup("label"))
+	_ = viper.BindPFlag("/concurrency", rootCmd.Flags().Lookup("concurrency"))
+	_ = viper.BindPFlag("/timeout", rootCmd.Flags().Lookup("timeout"))
 
 	modelFile := viper.GetString("/label/modelFile")
 	labelFile := viper.GetString("/label/labelFile")
+	n := viper.GetInt("/concurrency")
+	t := viper.GetInt("/timeout")
+
+	if n <= 0 {
+		return fmt.Errorf("concurrency value needs to be positive")
+	}
 
 	if len(args) == 0 {
 		return fmt.Errorf("please provide an image to work with as argument")
 	}
 
-	fileName := args[0]
-
-	// create operators to read from cloud and for working with images
+	// create operator to read from cloud
 	cloudOp, err := cloud.NewOperator(nil)
 	if err != nil {
 		return err
 	}
 	defer cloudOp.Close()
 
+	// create operator to work with images
 	imageOp, err := image.NewOperator(nil)
 	if err != nil {
 		return err
@@ -98,69 +108,113 @@ func label(cmd *cobra.Command, args []string) error {
 	}
 	defer sess.Close()
 
-	// read image data
-	imageData, err := cloudOp.Read(fileName)
-	if err != nil {
-		return err
-	}
-	// decode image
-	im, err := imageOp.Decode(bytes.NewReader(imageData))
-	if err != nil {
-		log.Fatal(err)
-	}
+	d := dispatcher.New(int32(n))
+	c := make(chan string)
 
-	imageRaw, err := imageOp.ResizeNormalize(299, 299, 0, 255, im)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	imT, err := tf.NewTensor(imageRaw)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	feeds := make(map[tf.Output]*tf.Tensor)
-	feeds[graph.Operation("Placeholder").Output(0)] = imT
-
-	out, err := sess.Run(
-		feeds,
-		[]tf.Output{
-			graph.Operation("final_result").Output(0),
-		},
-		nil,
-	)
-	if err != nil {
-		log.Fatal("session run:", err)
-	}
-
-	output, ok := out[0].Value().([][]float32)
-	if !ok {
-		log.Fatal("type inference error, expected [][]float32, got %T", out[0].Value())
-	}
-
-	for i := range output {
-		s := make([]score, len(output[i]))
-		for j := range output[i] {
-			s[j].Index = j
-			s[j].value = output[i][j]
+	// immediately spawn a go-routine that keeps reading from the channel and printing on stdout
+	go func() {
+		for {
+			fmt.Println(<-c)
 		}
+	}()
 
-		sort.Sort(scores(s))
+	for _, fileName := range args {
+		// do this if the var is being accessed from within a goroutine
+		fileName := fileName
 
-		sOut := make([]int, len(s))
-		for j := range s {
-			sOut[j] = s[j].Index
-		}
+		d.Do(func() {
+			l := logrus.WithField("file", fileName)
 
-		response := new(api.InferImageResponse)
-		response.Label = labels[sOut[0]]
-		jb, err := json.Marshal(response)
-		if err != nil {
-			return err
-		}
+			// read image data
+			imageData, err := cloudOp.Read(fileName)
+			if err != nil {
+				l.Errorf("error reading file:%v", err)
+				return
+			}
+			// decode image
+			im, err := imageOp.Decode(bytes.NewReader(imageData))
+			if err != nil {
+				l.Errorf("error decoding image:%v", err)
+				return
+			}
 
-		fmt.Println(string(jb))
-		break
+			imageRaw, err := imageOp.ResizeNormalize(299, 299, 0, 255, im)
+			if err != nil {
+				l.Errorf("error resizing image:%v", err)
+				return
+			}
+
+			imT, err := tf.NewTensor(imageRaw)
+			if err != nil {
+				l.Errorf("error making image tensor:%v", err)
+				return
+			}
+
+			feeds := make(map[tf.Output]*tf.Tensor)
+			feeds[graph.Operation("Placeholder").Output(0)] = imT
+
+			out, err := sess.Run(
+				feeds,
+				[]tf.Output{
+					graph.Operation("final_result").Output(0),
+				},
+				nil,
+			)
+			if err != nil {
+				l.Errorf("error running session:%v", err)
+				return
+			}
+
+			output, ok := out[0].Value().([][]float32)
+			if !ok {
+				l.Errorf("type inference error, expected [][]float32, got %T", out[0].Value())
+				return
+			}
+
+			for i := range output {
+				s := make([]score, len(output[i]))
+				for j := range output[i] {
+					s[j].Index = j
+					s[j].value = output[i][j]
+				}
+
+				sort.Sort(scores(s))
+
+				sOut := make([]int, len(s))
+				for j := range s {
+					sOut[j] = s[j].Index
+				}
+
+				response := new(api.InferImageResponse)
+				response.Label = labels[sOut[0]]
+				jb, err := json.Marshal(response)
+				if err != nil {
+					l.Errorf("error marshaling json:%v", err)
+					return
+				}
+
+				c <- fileName + ":" + string(jb)
+				break
+			}
+		})
 	}
+
+	// create a timeout
+	timeout := time.After(time.Duration(t) * time.Second)
+
+Loop:
+	for {
+		select {
+		case <-timeout:
+			return fmt.Errorf("timeout occurred")
+		default:
+			if !d.IsRunning() {
+				break Loop
+			} else {
+				time.Sleep(time.Millisecond*20)
+			}
+		}
+	}
+
 	return nil
 }

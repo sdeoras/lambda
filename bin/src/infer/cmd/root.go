@@ -60,6 +60,8 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.Flags().IntP("concurrency", "c", 10, "number of concurrent processes")
+	rootCmd.Flags().IntP("timeout", "t", 600, "timeout in seconds")
 }
 
 // initConfig reads in config file and ENV variables if set.
