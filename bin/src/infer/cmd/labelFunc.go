@@ -3,7 +3,6 @@ package cmd
 import (
 	"bufio"
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"log"
 	"sort"
@@ -136,6 +135,9 @@ func label(cmd *cobra.Command, args []string) error {
 		}
 	}()
 
+	response := new(api.InferImageResponse)
+	response.Outputs = make([]*api.InferOutput, 0, 0)
+
 	for _, fileName := range files {
 		// do this if the var is being accessed from within a goroutine
 		fileName := fileName
@@ -198,20 +200,11 @@ func label(cmd *cobra.Command, args []string) error {
 
 				sort.Sort(scores(s))
 
-				sOut := make([]int, len(s))
-				for j := range s {
-					sOut[j] = s[j].Index
-				}
-
-				response := new(api.InferImageResponse)
-				response.Label = labels[sOut[0]]
-				jb, err := json.Marshal(response)
-				if err != nil {
-					l.Errorf("error marshaling json:%v", err)
-					return
-				}
-
-				c <- fileName + ":" + string(jb)
+				out := new(api.InferOutput)
+				out.Label = labels[s[0].Index]
+				out.Name = fileName
+				out.Probability = int64(s[0].value * 100)
+				response.Outputs = append(response.Outputs, out)
 				break
 			}
 		})

@@ -19,11 +19,12 @@ func TestInfer_Remote(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	request := &api.InferImageRequest{
-		Data:      b,
-		ModelPath: "garageDoorChecker.pb",
-		LabelPath: "garageDoorChecker.txt",
-	}
+	request := new(api.InferImageRequest)
+	request.Images = make([]*api.Image, 1)
+	request.Images[0].Name = "xyz"
+	request.Images[0].Data = b
+	request.ModelPath = "garageDoorChecker.pb"
+	request.LabelPath = "garageDoorChecker.txt"
 
 	b, err = proto.Marshal(request)
 	if err != nil {
@@ -55,5 +56,5 @@ func TestInfer_Remote(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	fmt.Println("label:", response.Label)
+	fmt.Println("label:", response.Outputs[0].Label)
 }
