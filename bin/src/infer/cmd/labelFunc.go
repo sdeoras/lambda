@@ -5,11 +5,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/sdeoras/dispatcher"
-	"github.com/sirupsen/logrus"
 	"log"
 	"sort"
 	"time"
+
+	"github.com/sdeoras/dispatcher"
+	"github.com/sirupsen/logrus"
 
 	"github.com/sdeoras/lambda/api"
 
@@ -211,7 +212,7 @@ Loop:
 			if !d.IsRunning() {
 				break Loop
 			} else {
-				time.Sleep(time.Millisecond*20)
+				time.Sleep(time.Millisecond * 20)
 			}
 		}
 	}
