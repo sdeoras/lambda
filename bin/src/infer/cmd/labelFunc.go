@@ -59,10 +59,6 @@ func label(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("concurrency value needs to be positive")
 	}
 
-	if len(args) == 0 {
-		return fmt.Errorf("please provide an image to work with as argument")
-	}
-
 	lister := lsdir.NewLister(true, "*")
 	files, err := lister.List(diskFiles...)
 	if err != nil {
@@ -70,6 +66,11 @@ func label(cmd *cobra.Command, args []string) error {
 	}
 
 	files = append(files, args...)
+
+	if len(files) == 0 {
+		return fmt.Errorf("please provide at least an image to work with")
+	}
+
 	logrus.Infof("found %d files", len(files))
 
 	// create operator to read from cloud
