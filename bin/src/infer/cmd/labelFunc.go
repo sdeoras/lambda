@@ -9,6 +9,8 @@ import (
 	"sort"
 	"time"
 
+	"github.com/sdeoras/lsdir"
+
 	"github.com/sdeoras/dispatcher"
 	"github.com/sirupsen/logrus"
 
@@ -59,6 +61,12 @@ func label(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("please provide an image to work with as argument")
 	}
 
+	lister := lsdir.NewLister(true, "*.jpg")
+	files, err := lister.List(args...)
+	if err != nil {
+		return fmt.Errorf("error listing files:%v", err)
+	}
+
 	// create operator to read from cloud
 	cloudOp, err := cloud.NewOperator(nil)
 	if err != nil {
@@ -105,7 +113,7 @@ func label(cmd *cobra.Command, args []string) error {
 	// start new session for compute
 	sess, err := tf.NewSession(graph, nil)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("error starting new session:%v", err)
 	}
 	defer sess.Close()
 
@@ -119,7 +127,7 @@ func label(cmd *cobra.Command, args []string) error {
 		}
 	}()
 
-	for _, fileName := range args {
+	for _, fileName := range files {
 		// do this if the var is being accessed from within a goroutine
 		fileName := fileName
 
