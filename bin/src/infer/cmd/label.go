@@ -22,8 +22,8 @@ import (
 var labelCmd = &cobra.Command{
 	Use:   "label",
 	Short: "A brief description of your command",
-	Long: "",
-	RunE: label,
+	Long:  "",
+	RunE:  label,
 }
 
 func init() {

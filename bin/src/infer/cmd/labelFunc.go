@@ -55,6 +55,9 @@ func label(cmd *cobra.Command, args []string) error {
 	n := viper.GetInt("/concurrency")
 	t := viper.GetInt("/timeout")
 
+	// do not show usage on error
+	cmd.SilenceUsage = true
+
 	if n <= 0 {
 		return fmt.Errorf("concurrency value needs to be positive")
 	}
