@@ -41,7 +41,7 @@ func (m *EmailRequest) Reset()         { *m = EmailRequest{} }
 func (m *EmailRequest) String() string { return proto.CompactTextString(m) }
 func (*EmailRequest) ProtoMessage()    {}
 func (*EmailRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_api_98d15038169c4a74, []int{0}
+	return fileDescriptor_api_6548425e868eea19, []int{0}
 }
 func (m *EmailRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_EmailRequest.Unmarshal(m, b)
@@ -117,7 +117,7 @@ func (m *EmailResponse) Reset()         { *m = EmailResponse{} }
 func (m *EmailResponse) String() string { return proto.CompactTextString(m) }
 func (*EmailResponse) ProtoMessage()    {}
 func (*EmailResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_api_98d15038169c4a74, []int{1}
+	return fileDescriptor_api_6548425e868eea19, []int{1}
 }
 func (m *EmailResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_EmailResponse.Unmarshal(m, b)
@@ -170,7 +170,7 @@ func (m *ListOfString) Reset()         { *m = ListOfString{} }
 func (m *ListOfString) String() string { return proto.CompactTextString(m) }
 func (*ListOfString) ProtoMessage()    {}
 func (*ListOfString) Descriptor() ([]byte, []int) {
-	return fileDescriptor_api_98d15038169c4a74, []int{2}
+	return fileDescriptor_api_6548425e868eea19, []int{2}
 }
 func (m *ListOfString) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ListOfString.Unmarshal(m, b)
@@ -197,9 +197,13 @@ func (m *ListOfString) GetValue() []string {
 	return nil
 }
 
+// InferImageRequest takes a list of images (as bytes) and model and label file path URIs.
 type InferImageRequest struct {
-	Data                 []byte   `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
-	ModelPath            string   `protobuf:"bytes,2,opt,name=model_path,json=modelPath,proto3" json:"model_path,omitempty"`
+	// List of images
+	Images []*Image `protobuf:"bytes,1,rep,name=images,proto3" json:"images,omitempty"`
+	// Path to model pb file
+	ModelPath string `protobuf:"bytes,2,opt,name=model_path,json=modelPath,proto3" json:"model_path,omitempty"`
+	// Path to label file
 	LabelPath            string   `protobuf:"bytes,3,opt,name=label_path,json=labelPath,proto3" json:"label_path,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -210,7 +214,7 @@ func (m *InferImageRequest) Reset()         { *m = InferImageRequest{} }
 func (m *InferImageRequest) String() string { return proto.CompactTextString(m) }
 func (*InferImageRequest) ProtoMessage()    {}
 func (*InferImageRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_api_98d15038169c4a74, []int{3}
+	return fileDescriptor_api_6548425e868eea19, []int{3}
 }
 func (m *InferImageRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_InferImageRequest.Unmarshal(m, b)
@@ -230,9 +234,9 @@ func (m *InferImageRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_InferImageRequest proto.InternalMessageInfo
 
-func (m *InferImageRequest) GetData() []byte {
+func (m *InferImageRequest) GetImages() []*Image {
 	if m != nil {
-		return m.Data
+		return m.Images
 	}
 	return nil
 }
@@ -251,19 +255,66 @@ func (m *InferImageRequest) GetLabelPath() string {
 	return ""
 }
 
-type InferImageResponse struct {
-	Label                string   `protobuf:"bytes,1,opt,name=label,proto3" json:"label,omitempty"`
-	Probability          int64    `protobuf:"varint,2,opt,name=probability,proto3" json:"probability,omitempty"`
+// Image consists of a name and bytes
+type Image struct {
+	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Data                 []byte   `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Image) Reset()         { *m = Image{} }
+func (m *Image) String() string { return proto.CompactTextString(m) }
+func (*Image) ProtoMessage()    {}
+func (*Image) Descriptor() ([]byte, []int) {
+	return fileDescriptor_api_6548425e868eea19, []int{4}
+}
+func (m *Image) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Image.Unmarshal(m, b)
+}
+func (m *Image) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Image.Marshal(b, m, deterministic)
+}
+func (dst *Image) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Image.Merge(dst, src)
+}
+func (m *Image) XXX_Size() int {
+	return xxx_messageInfo_Image.Size(m)
+}
+func (m *Image) XXX_DiscardUnknown() {
+	xxx_messageInfo_Image.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Image proto.InternalMessageInfo
+
+func (m *Image) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *Image) GetData() []byte {
+	if m != nil {
+		return m.Data
+	}
+	return nil
+}
+
+// InferImageResponse is a list of output, one per input image.
+type InferImageResponse struct {
+	Outputs              []*InferOutput `protobuf:"bytes,1,rep,name=outputs,proto3" json:"outputs,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
 }
 
 func (m *InferImageResponse) Reset()         { *m = InferImageResponse{} }
 func (m *InferImageResponse) String() string { return proto.CompactTextString(m) }
 func (*InferImageResponse) ProtoMessage()    {}
 func (*InferImageResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_api_98d15038169c4a74, []int{4}
+	return fileDescriptor_api_6548425e868eea19, []int{5}
 }
 func (m *InferImageResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_InferImageResponse.Unmarshal(m, b)
@@ -283,14 +334,62 @@ func (m *InferImageResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_InferImageResponse proto.InternalMessageInfo
 
-func (m *InferImageResponse) GetLabel() string {
+func (m *InferImageResponse) GetOutputs() []*InferOutput {
+	if m != nil {
+		return m.Outputs
+	}
+	return nil
+}
+
+// InferOutput consists of a name, inferred label and probability for that label.
+type InferOutput struct {
+	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Label                string   `protobuf:"bytes,2,opt,name=label,proto3" json:"label,omitempty"`
+	Probability          int64    `protobuf:"varint,3,opt,name=probability,proto3" json:"probability,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *InferOutput) Reset()         { *m = InferOutput{} }
+func (m *InferOutput) String() string { return proto.CompactTextString(m) }
+func (*InferOutput) ProtoMessage()    {}
+func (*InferOutput) Descriptor() ([]byte, []int) {
+	return fileDescriptor_api_6548425e868eea19, []int{6}
+}
+func (m *InferOutput) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_InferOutput.Unmarshal(m, b)
+}
+func (m *InferOutput) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_InferOutput.Marshal(b, m, deterministic)
+}
+func (dst *InferOutput) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_InferOutput.Merge(dst, src)
+}
+func (m *InferOutput) XXX_Size() int {
+	return xxx_messageInfo_InferOutput.Size(m)
+}
+func (m *InferOutput) XXX_DiscardUnknown() {
+	xxx_messageInfo_InferOutput.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_InferOutput proto.InternalMessageInfo
+
+func (m *InferOutput) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *InferOutput) GetLabel() string {
 	if m != nil {
 		return m.Label
 	}
 	return ""
 }
 
-func (m *InferImageResponse) GetProbability() int64 {
+func (m *InferOutput) GetProbability() int64 {
 	if m != nil {
 		return m.Probability
 	}
@@ -303,7 +402,9 @@ func init() {
 	proto.RegisterMapType((map[string]*ListOfString)(nil), "api.EmailResponse.HeadersEntry")
 	proto.RegisterType((*ListOfString)(nil), "api.ListOfString")
 	proto.RegisterType((*InferImageRequest)(nil), "api.InferImageRequest")
+	proto.RegisterType((*Image)(nil), "api.Image")
 	proto.RegisterType((*InferImageResponse)(nil), "api.InferImageResponse")
+	proto.RegisterType((*InferOutput)(nil), "api.InferOutput")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -321,7 +422,7 @@ type ApiClient interface {
 	// Email service sends email
 	Email(ctx context.Context, in *EmailRequest, opts ...grpc.CallOption) (*EmailResponse, error)
 	// InferImage applies trained model on input image for inferring labels
-	InferImage(ctx context.Context, in *InferImageRequest, opts ...grpc.CallOption) (*InferImageResponse, error)
+	InferImage(ctx context.Context, opts ...grpc.CallOption) (Api_InferImageClient, error)
 }
 
 type apiClient struct {
@@ -341,13 +442,38 @@ func (c *apiClient) Email(ctx context.Context, in *EmailRequest, opts ...grpc.Ca
 	return out, nil
 }
 
-func (c *apiClient) InferImage(ctx context.Context, in *InferImageRequest, opts ...grpc.CallOption) (*InferImageResponse, error) {
-	out := new(InferImageResponse)
-	err := c.cc.Invoke(ctx, "/api.Api/InferImage", in, out, opts...)
+func (c *apiClient) InferImage(ctx context.Context, opts ...grpc.CallOption) (Api_InferImageClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_Api_serviceDesc.Streams[0], "/api.Api/InferImage", opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &apiInferImageClient{stream}
+	return x, nil
+}
+
+type Api_InferImageClient interface {
+	Send(*InferImageRequest) error
+	CloseAndRecv() (*InferImageResponse, error)
+	grpc.ClientStream
+}
+
+type apiInferImageClient struct {
+	grpc.ClientStream
+}
+
+func (x *apiInferImageClient) Send(m *InferImageRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *apiInferImageClient) CloseAndRecv() (*InferImageResponse, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(InferImageResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 // ApiServer is the server API for Api service.
@@ -355,7 +481,7 @@ type ApiServer interface {
 	// Email service sends email
 	Email(context.Context, *EmailRequest) (*EmailResponse, error)
 	// InferImage applies trained model on input image for inferring labels
-	InferImage(context.Context, *InferImageRequest) (*InferImageResponse, error)
+	InferImage(Api_InferImageServer) error
 }
 
 func RegisterApiServer(s *grpc.Server, srv ApiServer) {
@@ -380,22 +506,30 @@ func _Api_Email_Handler(srv interface{}, ctx context.Context, dec func(interface
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Api_InferImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(InferImageRequest)
-	if err := dec(in); err != nil {
+func _Api_InferImage_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ApiServer).InferImage(&apiInferImageServer{stream})
+}
+
+type Api_InferImageServer interface {
+	SendAndClose(*InferImageResponse) error
+	Recv() (*InferImageRequest, error)
+	grpc.ServerStream
+}
+
+type apiInferImageServer struct {
+	grpc.ServerStream
+}
+
+func (x *apiInferImageServer) SendAndClose(m *InferImageResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *apiInferImageServer) Recv() (*InferImageRequest, error) {
+	m := new(InferImageRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
-	if interceptor == nil {
-		return srv.(ApiServer).InferImage(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.Api/InferImage",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServer).InferImage(ctx, req.(*InferImageRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+	return m, nil
 }
 
 var _Api_serviceDesc = grpc.ServiceDesc{
@@ -406,44 +540,50 @@ var _Api_serviceDesc = grpc.ServiceDesc{
 			MethodName: "Email",
 			Handler:    _Api_Email_Handler,
 		},
+	},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "InferImage",
-			Handler:    _Api_InferImage_Handler,
+			StreamName:    "InferImage",
+			Handler:       _Api_InferImage_Handler,
+			ClientStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "api.proto",
 }
 
-func init() { proto.RegisterFile("api.proto", fileDescriptor_api_98d15038169c4a74) }
+func init() { proto.RegisterFile("api.proto", fileDescriptor_api_6548425e868eea19) }
 
-var fileDescriptor_api_98d15038169c4a74 = []byte{
-	// 425 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x64, 0x52, 0xdd, 0x8a, 0xd3, 0x50,
-	0x10, 0x36, 0x7b, 0xfa, 0xb3, 0x99, 0x46, 0xb0, 0xc3, 0xe2, 0xc6, 0x8a, 0x6c, 0x08, 0x82, 0xbd,
-	0x2a, 0x52, 0x6f, 0xd4, 0x1b, 0x11, 0x59, 0x70, 0x61, 0xfd, 0x21, 0x3e, 0x40, 0x39, 0xd9, 0x4c,
-	0xdb, 0x68, 0x92, 0x13, 0x93, 0xa9, 0xd8, 0x77, 0xf2, 0x59, 0x7c, 0x26, 0xc9, 0x9c, 0x13, 0x8d,
-	0xf4, 0x6e, 0xce, 0xf7, 0x7d, 0xf3, 0xf7, 0xcd, 0x01, 0x5f, 0xd7, 0xf9, 0xaa, 0x6e, 0x0c, 0x1b,
-	0x54, 0xba, 0xce, 0xe3, 0x5f, 0x1e, 0x04, 0xd7, 0xa5, 0xce, 0x8b, 0x84, 0xbe, 0x1f, 0xa8, 0x65,
-	0x7c, 0x04, 0xe7, 0x6c, 0x36, 0xd4, 0x41, 0xa1, 0x17, 0x79, 0x4b, 0x3f, 0x99, 0xb2, 0x11, 0x05,
-	0x5e, 0xc2, 0x94, 0xcd, 0xa6, 0xd2, 0x25, 0x85, 0x67, 0xc2, 0x4c, 0xd8, 0x7c, 0xd4, 0x25, 0xe1,
-	0x13, 0x80, 0x6d, 0x63, 0x4a, 0x97, 0xa5, 0x84, 0xf3, 0x3b, 0xc4, 0xe6, 0x3d, 0x06, 0x79, 0xd8,
-	0xcc, 0x91, 0xb0, 0xe7, 0x1d, 0x20, 0xb9, 0x21, 0x4c, 0xdb, 0x43, 0xfa, 0x95, 0xee, 0x38, 0x1c,
-	0xdb, 0x76, 0xee, 0x89, 0x08, 0xa3, 0xd4, 0x64, 0xc7, 0x70, 0x12, 0x79, 0xcb, 0x20, 0x91, 0x38,
-	0xfe, 0xed, 0xc1, 0x7d, 0x37, 0x6e, 0x5b, 0x9b, 0xaa, 0x25, 0xbc, 0x82, 0x59, 0xcb, 0x9a, 0x0f,
-	0xed, 0xe6, 0xce, 0x64, 0x24, 0x23, 0xab, 0x04, 0x2c, 0xf4, 0xce, 0x64, 0xf4, 0xb7, 0x8c, 0x1d,
-	0x59, 0x62, 0x7c, 0x05, 0xd3, 0x3d, 0xe9, 0x8c, 0x9a, 0x36, 0x54, 0x91, 0x5a, 0xce, 0xd6, 0x57,
-	0xab, 0xce, 0x97, 0xff, 0x2a, 0xaf, 0xde, 0x5b, 0xc5, 0x75, 0xc5, 0xcd, 0x31, 0xe9, 0xf5, 0x8b,
-	0x0f, 0x10, 0x0c, 0x09, 0x7c, 0x00, 0xea, 0x1b, 0x1d, 0x9d, 0x55, 0x5d, 0x88, 0xcf, 0x60, 0xfc,
-	0x43, 0x17, 0x07, 0x6b, 0xd2, 0x6c, 0x3d, 0x97, 0xd2, 0xb7, 0x79, 0xcb, 0x9f, 0xb6, 0x5f, 0xb8,
-	0xc9, 0xab, 0x5d, 0x62, 0xf9, 0xd7, 0x67, 0x2f, 0xbd, 0xf8, 0x29, 0x04, 0x43, 0x0a, 0x2f, 0xfa,
-	0x64, 0x2f, 0x52, 0x4b, 0xdf, 0x29, 0x63, 0x82, 0xf9, 0x4d, 0xb5, 0xa5, 0xe6, 0xa6, 0xd4, 0x3b,
-	0xea, 0x2f, 0x85, 0x30, 0xca, 0x34, 0x6b, 0x69, 0x1d, 0x24, 0x12, 0x77, 0x97, 0x28, 0x4d, 0x46,
-	0xc5, 0xa6, 0xd6, 0xbc, 0x77, 0x2b, 0xfb, 0x82, 0x7c, 0xd6, 0xbc, 0xef, 0xe8, 0x42, 0xa7, 0x3d,
-	0xed, 0x0e, 0x25, 0x48, 0x47, 0xc7, 0xb7, 0x80, 0xc3, 0x36, 0xce, 0xe1, 0x0b, 0x18, 0x8b, 0xc4,
-	0xed, 0x68, 0x1f, 0x18, 0xc1, 0xac, 0x6e, 0x4c, 0xaa, 0xd3, 0xbc, 0xc8, 0xd9, 0xba, 0xab, 0x92,
-	0x21, 0xb4, 0xfe, 0x09, 0xea, 0x6d, 0x9d, 0xe3, 0x73, 0x18, 0xdb, 0x6f, 0x30, 0x1f, 0x7a, 0x2c,
-	0x2b, 0x2c, 0xf0, 0xd4, 0xf6, 0xf8, 0x1e, 0xbe, 0x01, 0xf8, 0x37, 0x06, 0x3e, 0x14, 0xcd, 0xc9,
-	0xfa, 0x8b, 0xcb, 0x13, 0xbc, 0x2f, 0x90, 0x4e, 0xe4, 0x83, 0xbf, 0xf8, 0x13, 0x00, 0x00, 0xff,
-	0xff, 0x93, 0x15, 0xfd, 0x90, 0xed, 0x02, 0x00, 0x00,
+var fileDescriptor_api_6548425e868eea19 = []byte{
+	// 482 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x53, 0x51, 0x6f, 0x94, 0x40,
+	0x10, 0x96, 0x52, 0x8e, 0x32, 0x60, 0xd2, 0xdb, 0x34, 0x16, 0xcf, 0x98, 0x12, 0x62, 0x22, 0xf1,
+	0xe1, 0x34, 0xe7, 0x8b, 0xfa, 0x64, 0x63, 0x9a, 0xd8, 0x44, 0xad, 0xc1, 0x27, 0x9f, 0x2e, 0x4b,
+	0xd9, 0xeb, 0xa1, 0xc0, 0x22, 0x3b, 0x98, 0x9c, 0xbf, 0xc9, 0xdf, 0xe2, 0x6f, 0x32, 0x3b, 0xbb,
+	0x58, 0xcc, 0xf5, 0x6d, 0xe6, 0xfb, 0xbe, 0x99, 0xfd, 0x66, 0x06, 0x20, 0xe0, 0x5d, 0xb5, 0xec,
+	0x7a, 0x89, 0x92, 0xb9, 0xbc, 0xab, 0xd2, 0xdf, 0x0e, 0x44, 0x17, 0x0d, 0xaf, 0xea, 0x5c, 0xfc,
+	0x18, 0x84, 0x42, 0xf6, 0x10, 0x8e, 0x50, 0xae, 0x85, 0x86, 0x62, 0x27, 0x71, 0xb2, 0x20, 0xf7,
+	0x51, 0x92, 0x82, 0x9d, 0x82, 0x8f, 0x72, 0xdd, 0xf2, 0x46, 0xc4, 0x07, 0xc4, 0xcc, 0x50, 0x7e,
+	0xe2, 0x8d, 0x60, 0x8f, 0x01, 0x36, 0xbd, 0x6c, 0x6c, 0x95, 0x4b, 0x5c, 0xa0, 0x11, 0x53, 0xf7,
+	0x08, 0x28, 0x31, 0x95, 0x87, 0xc4, 0x1e, 0x69, 0x80, 0x6a, 0x63, 0xf0, 0xd5, 0x50, 0x7c, 0x13,
+	0xd7, 0x18, 0x7b, 0xe6, 0x39, 0x9b, 0x32, 0x06, 0x87, 0x85, 0x2c, 0x77, 0xf1, 0x2c, 0x71, 0xb2,
+	0x28, 0xa7, 0x38, 0xfd, 0xe3, 0xc0, 0x7d, 0x6b, 0x57, 0x75, 0xb2, 0x55, 0x82, 0x9d, 0x41, 0xa8,
+	0x90, 0xe3, 0xa0, 0xd6, 0xd7, 0xb2, 0x14, 0x64, 0xd9, 0xcd, 0xc1, 0x40, 0xef, 0x64, 0x29, 0xfe,
+	0xb5, 0x31, 0x96, 0x29, 0x66, 0xaf, 0xc1, 0xdf, 0x0a, 0x5e, 0x8a, 0x5e, 0xc5, 0x6e, 0xe2, 0x66,
+	0xe1, 0xea, 0x6c, 0xa9, 0xf7, 0xf2, 0x5f, 0xe7, 0xe5, 0x7b, 0xa3, 0xb8, 0x68, 0xb1, 0xdf, 0xe5,
+	0xa3, 0x7e, 0xf1, 0x11, 0xa2, 0x29, 0xc1, 0x8e, 0xc1, 0xfd, 0x2e, 0x76, 0x76, 0x55, 0x3a, 0x64,
+	0x4f, 0xc1, 0xfb, 0xc9, 0xeb, 0xc1, 0x2c, 0x29, 0x5c, 0xcd, 0xa9, 0xf5, 0x87, 0x4a, 0xe1, 0xd5,
+	0xe6, 0x0b, 0xf6, 0x55, 0x7b, 0x93, 0x1b, 0xfe, 0xcd, 0xc1, 0x2b, 0x27, 0x7d, 0x02, 0xd1, 0x94,
+	0x62, 0x27, 0x63, 0xb1, 0x93, 0xb8, 0x59, 0x60, 0x95, 0xe9, 0x00, 0xf3, 0xcb, 0x76, 0x23, 0xfa,
+	0xcb, 0x86, 0xdf, 0x88, 0xf1, 0x52, 0x29, 0xcc, 0x2a, 0x9d, 0x2b, 0xd2, 0x86, 0x2b, 0xa0, 0x87,
+	0x8c, 0xc4, 0x32, 0xfa, 0x32, 0x8d, 0x2c, 0x45, 0xbd, 0xee, 0x38, 0x6e, 0xed, 0x0a, 0x02, 0x42,
+	0x3e, 0x73, 0xdc, 0x6a, 0xba, 0xe6, 0xc5, 0x48, 0xdb, 0xc3, 0x11, 0xa2, 0xe9, 0xf4, 0x39, 0x78,
+	0xd4, 0x4e, 0xef, 0x90, 0x8e, 0x67, 0xa6, 0xa4, 0x58, 0x63, 0x25, 0x47, 0x4e, 0x4d, 0xa3, 0x9c,
+	0xe2, 0xf4, 0x2d, 0xb0, 0xa9, 0x4f, 0x7b, 0xa2, 0x67, 0xe0, 0xcb, 0x01, 0xbb, 0x01, 0x47, 0xa7,
+	0xc7, 0xc6, 0xa9, 0x56, 0x5e, 0x11, 0x91, 0x8f, 0x82, 0xf4, 0x2b, 0x84, 0x13, 0xfc, 0xce, 0x87,
+	0x4f, 0xc0, 0x23, 0x8b, 0x76, 0x1c, 0x93, 0xb0, 0x04, 0xc2, 0xae, 0x97, 0x05, 0x2f, 0xaa, 0xba,
+	0xc2, 0x1d, 0xcd, 0xe2, 0xe6, 0x53, 0x68, 0xf5, 0x0b, 0xdc, 0xf3, 0xae, 0x62, 0x2f, 0xc0, 0x33,
+	0x9f, 0xe5, 0x7c, 0x7a, 0x73, 0x5a, 0xe9, 0x82, 0xed, 0x7f, 0x06, 0xe9, 0x3d, 0x76, 0x0e, 0x70,
+	0x3b, 0x15, 0x7b, 0x70, 0x6b, 0x7e, 0x7a, 0x8e, 0xc5, 0xe9, 0x1e, 0x3e, 0x36, 0xc8, 0x9c, 0x62,
+	0x46, 0xbf, 0xdc, 0xcb, 0xbf, 0x01, 0x00, 0x00, 0xff, 0xff, 0x14, 0xac, 0x3e, 0x96, 0x7f, 0x03,
+	0x00, 0x00,
 }
