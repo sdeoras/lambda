@@ -21,6 +21,7 @@ func TestInfer_Remote(t *testing.T) {
 
 	request := new(api.InferImageRequest)
 	request.Images = make([]*api.Image, 1)
+	request.Images[0] = new(api.Image)
 	request.Images[0].Name = "xyz"
 	request.Images[0].Data = b
 	request.ModelPath = "garageDoorChecker.pb"

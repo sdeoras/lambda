@@ -3,9 +3,11 @@ package cmd
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"log"
 	"sort"
+	"sync"
 	"time"
 
 	"github.com/sdeoras/lsdir"
@@ -137,6 +139,7 @@ func label(cmd *cobra.Command, args []string) error {
 
 	response := new(api.InferImageResponse)
 	response.Outputs = make([]*api.InferOutput, 0, 0)
+	mu := new(sync.Mutex)
 
 	for _, fileName := range files {
 		// do this if the var is being accessed from within a goroutine
@@ -204,7 +207,11 @@ func label(cmd *cobra.Command, args []string) error {
 				out.Label = labels[s[0].Index]
 				out.Name = fileName
 				out.Probability = int64(s[0].value * 100)
+
+				mu.Lock()
 				response.Outputs = append(response.Outputs, out)
+				mu.Unlock()
+
 				break
 			}
 		})
@@ -227,6 +234,13 @@ Loop:
 			}
 		}
 	}
+
+	jb, err := json.Marshal(response)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(string(jb))
 
 	return nil
 }
