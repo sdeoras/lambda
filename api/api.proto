@@ -7,7 +7,7 @@ service Api {
     // Email service sends email
     rpc Email(EmailRequest) returns (EmailResponse) {}
     // InferImage applies trained model on input image for inferring labels
-    rpc InferImage(InferImageRequest) returns (InferImageResponse) {}
+    rpc InferImage(stream InferImageRequest) returns (InferImageResponse) {}
 }
 
 // EmailRequest is the request to send email. This data is streamed from client
@@ -33,13 +33,30 @@ message ListOfString {
     repeated string value = 1;
 }
 
+// InferImageRequest takes a list of images (as bytes) and model and label file path URIs.
 message InferImageRequest {
-    bytes data = 1;
+    // List of images
+    repeated Image images = 1;
+    // Path to model pb file
     string model_path = 2;
+    // Path to label file
     string label_path = 3;
 }
 
+// Image consists of a name and bytes
+message Image {
+    string name = 1;
+    bytes data = 2;
+}
+
+// InferImageResponse is a list of output, one per input image.
 message InferImageResponse {
-    string label = 1;
-    int64 probability = 2;
+    repeated InferOutput outputs = 1;
+}
+
+// InferOutput consists of a name, inferred label and probability for that label.
+message InferOutput {
+    string name = 1;
+    string label = 2;
+    int64 probability = 3;
 }
