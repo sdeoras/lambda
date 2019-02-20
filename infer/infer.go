@@ -70,33 +70,38 @@ func InferImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fileName := uuid.New().String() + ".jpg"
-
 	inferRequest.ModelPath = "gs://" + os.Getenv("LAMBDA_BUCKET") + "/" + inferRequest.ModelPath
 	inferRequest.LabelPath = "gs://" + os.Getenv("LAMBDA_BUCKET") + "/" + inferRequest.LabelPath
-	filePath := "gs://" + os.Getenv("LAMBDA_BUCKET") + "/" + fileName
 
-	// write file to gcs
-	if n, err := writeToGS(context.Background(),
-		os.Getenv("LAMBDA_BUCKET"),
-		fileName, inferRequest.Data); err != nil {
-		http.Error(w, fmt.Sprintf("could not successfull write to gcs bucket:%v", err), http.StatusInternalServerError)
-		return
-	} else {
-		if n != len(inferRequest.Data) {
-			http.Error(w, fmt.Sprintf("could not successfull write all data to gcs bucket:%v of %v", n, len(inferRequest.Data)), http.StatusInternalServerError)
+	id := uuid.New().String()
+	files := make([]string, 0, 0)
+	for _, image := range inferRequest.Images {
+		fileName := image.Name + "_" + id + ".jpg"
+		files = append(files, "gs://"+os.Getenv("LAMBDA_BUCKET")+"/"+fileName)
+
+		// write file to gcs
+		if n, err := writeToGS(context.Background(),
+			os.Getenv("LAMBDA_BUCKET"),
+			fileName, image.Data); err != nil {
+			http.Error(w, fmt.Sprintf("could not successfull write to gcs bucket:%v", err), http.StatusInternalServerError)
 			return
+		} else {
+			if n != len(image.Data) {
+				http.Error(w, fmt.Sprintf("could not successfull write all data to gcs bucket:%v of %v", n, len(image.Data)), http.StatusInternalServerError)
+				return
+			}
 		}
 	}
 
 	// executing the shell binary a.out produces json output that can be unmarshal'ed into
 	// infer response object
-	b, err = exec.Command("/srv/files/bin/src/infer/a.out", "label",
+	args := []string{"label",
 		"--model", inferRequest.ModelPath,
-		"--label", inferRequest.LabelPath,
-		filePath).Output()
+		"--label", inferRequest.LabelPath}
+	b, err = exec.Command("/srv/files/bin/src/infer/a.out",
+		append(args, files...)...).Output()
 	if err != nil {
-		http.Error(w, fmt.Sprintf("could not successfull run infer:%v", err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("could not successfully run infer:%v", err), http.StatusInternalServerError)
 		return
 	}
 
