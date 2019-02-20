@@ -224,7 +224,8 @@ Loop:
 	for {
 		select {
 		case <-timeout:
-			return fmt.Errorf("timeout occurred")
+			logrus.Infof("timeout occurred. set to %d, use -t to change", t)
+			return nil
 		default:
 			if !d.IsRunning() {
 				break Loop
