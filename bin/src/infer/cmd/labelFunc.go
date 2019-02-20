@@ -66,6 +66,7 @@ func label(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("error listing files:%v", err)
 	}
+	logrus.Infof("found %d files", len(files))
 
 	// create operator to read from cloud
 	cloudOp, err := cloud.NewOperator(nil)
