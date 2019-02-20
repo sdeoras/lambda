@@ -45,11 +45,13 @@ func (s scores) Swap(i, j int) {
 func label(cmd *cobra.Command, args []string) error {
 	_ = viper.BindPFlag("/label/modelFile", cmd.Flags().Lookup("model"))
 	_ = viper.BindPFlag("/label/labelFile", cmd.Flags().Lookup("label"))
+	_ = viper.BindPFlag("/label/file", cmd.Flags().Lookup("file"))
 	_ = viper.BindPFlag("/concurrency", rootCmd.Flags().Lookup("concurrency"))
 	_ = viper.BindPFlag("/timeout", rootCmd.Flags().Lookup("timeout"))
 
 	modelFile := viper.GetString("/label/modelFile")
 	labelFile := viper.GetString("/label/labelFile")
+	diskFiles := viper.GetStringSlice("/label/file")
 	n := viper.GetInt("/concurrency")
 	t := viper.GetInt("/timeout")
 
@@ -62,10 +64,12 @@ func label(cmd *cobra.Command, args []string) error {
 	}
 
 	lister := lsdir.NewLister(true, "*")
-	files, err := lister.List(args...)
+	files, err := lister.List(diskFiles...)
 	if err != nil {
 		return fmt.Errorf("error listing files:%v", err)
 	}
+
+	files = append(files, args...)
 	logrus.Infof("found %d files", len(files))
 
 	// create operator to read from cloud

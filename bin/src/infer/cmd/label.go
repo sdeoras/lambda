@@ -22,12 +22,7 @@ import (
 var labelCmd = &cobra.Command{
 	Use:   "label",
 	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long: "",
 	RunE: label,
 }
 
@@ -46,4 +41,5 @@ func init() {
 
 	labelCmd.Flags().StringP("model", "m", "", "path to model pb file")
 	labelCmd.Flags().StringP("label", "l", "", "path to labels file")
+	labelCmd.Flags().StringSliceP("file", "f", []string{}, "file or folder on disk")
 }
