@@ -61,7 +61,7 @@ func label(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("please provide an image to work with as argument")
 	}
 
-	lister := lsdir.NewLister(true, "*.jpg")
+	lister := lsdir.NewLister(true, "*")
 	files, err := lister.List(args...)
 	if err != nil {
 		return fmt.Errorf("error listing files:%v", err)
