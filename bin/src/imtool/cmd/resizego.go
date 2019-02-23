@@ -18,28 +18,28 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// labelCmd represents the label command
-var labelCmd = &cobra.Command{
-	Use:   "label",
-	Short: "A brief description of your command",
-	Long:  "",
-	RunE:  label,
+// resizegoCmd represents the resizego command
+var resizegoCmd = &cobra.Command{
+	Use:   "resizego",
+	Short: "resize using go lib",
+	Long:  ``,
+	RunE:  resizegoRunE,
 }
 
 func init() {
-	rootCmd.AddCommand(labelCmd)
+	rootCmd.AddCommand(resizegoCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// labelCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// resizegoCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// labelCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
-	labelCmd.Flags().StringP("model", "m", "", "path to model pb file")
-	labelCmd.Flags().StringP("label", "l", "", "path to labels file")
-	labelCmd.Flags().StringSliceP("file", "f", []string{}, "file or folder on disk")
+	// resizegoCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	resizegoCmd.Flags().Int("height", -1, "height of image")
+	resizegoCmd.Flags().Int("width", -1, "width of image")
+	resizegoCmd.Flags().StringSliceP("file", "f", []string{}, "file or folder on disk")
+	resizegoCmd.Flags().StringP("out", "o", "", "output folder or bucket path")
 }

@@ -43,18 +43,18 @@ func (s scores) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
 
-func label(cmd *cobra.Command, args []string) error {
-	_ = viper.BindPFlag("/label/modelFile", cmd.Flags().Lookup("model"))
-	_ = viper.BindPFlag("/label/labelFile", cmd.Flags().Lookup("label"))
-	_ = viper.BindPFlag("/label/file", cmd.Flags().Lookup("file"))
+func inferRunE(cmd *cobra.Command, args []string) error {
 	_ = viper.BindPFlag("/concurrency", rootCmd.Flags().Lookup("concurrency"))
 	_ = viper.BindPFlag("/timeout", rootCmd.Flags().Lookup("timeout"))
+	_ = viper.BindPFlag("/infer/modelFile", cmd.Flags().Lookup("model"))
+	_ = viper.BindPFlag("/infer/labelFile", cmd.Flags().Lookup("inferRunE"))
+	_ = viper.BindPFlag("/infer/file", cmd.Flags().Lookup("file"))
 
-	modelFile := viper.GetString("/label/modelFile")
-	labelFile := viper.GetString("/label/labelFile")
-	diskFiles := viper.GetStringSlice("/label/file")
 	n := viper.GetInt("/concurrency")
 	t := viper.GetInt("/timeout")
+	modelFile := viper.GetString("/infer/modelFile")
+	labelFile := viper.GetString("/infer/labelFile")
+	diskFiles := viper.GetStringSlice("/infer/file")
 
 	// do not show usage on error
 	cmd.SilenceUsage = true
