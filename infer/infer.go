@@ -95,10 +95,10 @@ func InferImage(w http.ResponseWriter, r *http.Request) {
 
 	// executing the shell binary a.out produces json output that can be unmarshal'ed into
 	// infer response object
-	args := []string{"label",
+	args := []string{"infer",
 		"--model", inferRequest.ModelPath,
 		"--label", inferRequest.LabelPath}
-	b, err = exec.Command("/srv/files/bin/src/infer/a.out",
+	b, err = exec.Command("/srv/files/bin/src/imtool/a.out",
 		append(args, files...)...).Output()
 	if err != nil {
 		http.Error(w, fmt.Sprintf("could not successfully run infer:%v", err), http.StatusInternalServerError)
