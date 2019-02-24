@@ -103,7 +103,7 @@ func InferImage(w http.ResponseWriter, r *http.Request) {
 	b, err = exec.Command("/srv/files/bin/src/imtool/a.out",
 		append(args, files...)...).Output()
 	if err != nil {
-		http.Error(w, fmt.Sprintf("could not successfully run infer:%v", err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("could not successfully run infer:%v:%s", err, string(b)), http.StatusInternalServerError)
 		return
 	}
 
