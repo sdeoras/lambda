@@ -37,10 +37,10 @@ message ListOfString {
 message InferImageRequest {
     // List of images
     repeated Image images = 1;
-    // Path to model pb file
-    string model_path = 2;
-    // Path to label file
-    string label_path = 3;
+    // Model name.
+    // Model files (.pb and .txt) exist in a folder by this name in
+    // designated object store.
+    string model_name = 2;
 }
 
 // Image consists of a name and bytes
