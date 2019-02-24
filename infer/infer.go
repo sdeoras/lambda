@@ -28,7 +28,7 @@ var (
 
 func init() {
 	once.Do(func() {
-		_ = os.Setenv("LD_LIBRARY_PATH", "/srv/files/bin/src/infer/lib:"+
+		_ = os.Setenv("LD_LIBRARY_PATH", "/srv/files/bin/src/imtool/lib:"+
 			os.Getenv("LD_LIBRARY_PATH"))
 	})
 }
@@ -103,7 +103,7 @@ func InferImage(w http.ResponseWriter, r *http.Request) {
 	b, err = exec.Command("/srv/files/bin/src/imtool/a.out",
 		append(args, files...)...).Output()
 	if err != nil {
-		http.Error(w, fmt.Sprintf("could not successfully run infer:%v:%s", err, string(b)), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("could not successfully run infer:%v:imtool %v %v", err, args, files), http.StatusInternalServerError)
 		return
 	}
 
