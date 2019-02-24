@@ -40,6 +40,6 @@ func init() {
 	// inferCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	inferCmd.Flags().StringP("model", "m", "", "path to model pb file")
-	inferCmd.Flags().StringP("inferRunE", "l", "", "path to labels file")
+	inferCmd.Flags().StringP("label", "l", "", "path to labels file")
 	inferCmd.Flags().StringSliceP("file", "f", []string{}, "file or folder on disk")
 }

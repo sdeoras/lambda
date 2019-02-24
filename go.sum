@@ -109,8 +109,8 @@ github.com/sdeoras/httprouter v0.0.0 h1:mu7O4hxIm0PjKjpkqX/CT5aLaG/xvv1Q4LA1jrJz
 github.com/sdeoras/httprouter v0.0.0/go.mod h1:P7mgXXgknLQi6kDSCbARk4zaTomtcNymztRbdWKXvBY=
 github.com/sdeoras/jwt v0.0.3 h1:F8KI2eNeHKMnyAeo4tuq1p6lFQojp9bQfOZ3AX3MWs4=
 github.com/sdeoras/jwt v0.0.3/go.mod h1:TA6D4/3vOMvVSC5MWEC2ML/bNosW6gTZ5T7lVrulp1c=
-github.com/sdeoras/lambda/api v0.0.0-20190223132404-9f079b1ca7e2 h1:bYm1MBpczKjB0+V1WAIQyIMULN5EWs4ELQaATcZBBsM=
-github.com/sdeoras/lambda/api v0.0.0-20190223132404-9f079b1ca7e2/go.mod h1:6oAW/wSEqaRQPWkEltrnJfSOuT70J0D6MsHEJLkOPKQ=
+github.com/sdeoras/lambda/api v0.0.0-20190224001548-9dd67f91b7a8 h1:yBdbMdVC2KyJ5gErfLqrQGYCfAWHlJ6cEX29XKlwiRw=
+github.com/sdeoras/lambda/api v0.0.0-20190224001548-9dd67f91b7a8/go.mod h1:6oAW/wSEqaRQPWkEltrnJfSOuT70J0D6MsHEJLkOPKQ=
 github.com/sdeoras/lsdir v0.0.0 h1:b1FSL1qvzUkX7TaJcY1z5F72X6eZGdXvPp8tNP1qhy0=
 github.com/sdeoras/lsdir v0.0.0/go.mod h1:4GAAHsq8jLhu6Bx4k+ItbD6E5HuuVEd05nW5vJbciSU=
 github.com/sendgrid/rest v2.4.1+incompatible h1:HDib/5xzQREPq34lN3YMhQtMkdXxS/qLp5G3k9a5++4=
