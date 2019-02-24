@@ -10,7 +10,7 @@ require (
 	github.com/sdeoras/dispatcher v1.0.2
 	github.com/sdeoras/httprouter v0.0.0
 	github.com/sdeoras/jwt v0.0.3
-	github.com/sdeoras/lambda/api v0.0.0-20190224005816-482ca6c760db
+	github.com/sdeoras/lambda/api v0.0.0-20190224135612-b1f69848c284
 	github.com/sdeoras/lsdir v0.0.0
 	github.com/sendgrid/rest v2.4.1+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.4.1+incompatible
