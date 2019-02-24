@@ -131,12 +131,12 @@ func InferImage(w http.ResponseWriter, r *http.Request) {
 	files := make([]string, 0, 0)
 	for _, image := range inferRequest.Images {
 		fileName := image.Name + "_" + id + ".jpg"
-		fileName = fmt.Sprintf("gs://%s/%s/%s/%s",
+		file := fmt.Sprintf("gs://%s/%s/%s/%s",
 			os.Getenv("LAMBDA_BUCKET"),
 			imageDir,
 			inferRequest.ModelName,
 			fileName)
-		files = append(files, fileName)
+		files = append(files, file)
 
 		objName := fmt.Sprintf("%s/%s/%s",
 			imageDir,
