@@ -25,6 +25,7 @@ func TestInfer_Remote(t *testing.T) {
 	request.Images[0].Name = "xyz"
 	request.Images[0].Data = b
 	request.ModelName = "garage-door-checker"
+	request.ModelVersion = "v1"
 
 	b, err = proto.Marshal(request)
 	if err != nil {
