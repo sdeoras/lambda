@@ -47,7 +47,7 @@ func inferRunE(cmd *cobra.Command, args []string) error {
 	_ = viper.BindPFlag("/concurrency", rootCmd.Flags().Lookup("concurrency"))
 	_ = viper.BindPFlag("/timeout", rootCmd.Flags().Lookup("timeout"))
 	_ = viper.BindPFlag("/infer/modelFile", cmd.Flags().Lookup("model"))
-	_ = viper.BindPFlag("/infer/labelFile", cmd.Flags().Lookup("inferRunE"))
+	_ = viper.BindPFlag("/infer/labelFile", cmd.Flags().Lookup("label"))
 	_ = viper.BindPFlag("/infer/file", cmd.Flags().Lookup("file"))
 
 	n := viper.GetInt("/concurrency")
