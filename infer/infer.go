@@ -70,8 +70,10 @@ func InferImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	inferRequest.ModelPath = "gs://" + os.Getenv("LAMBDA_BUCKET") + "/" + inferRequest.ModelPath
-	inferRequest.LabelPath = "gs://" + os.Getenv("LAMBDA_BUCKET") + "/" + inferRequest.LabelPath
+	modelPath := "gs://" + os.Getenv("LAMBDA_BUCKET") +
+		"/models/" + inferRequest.ModelName + "/output_graph.pb"
+	labelPath := "gs://" + os.Getenv("LAMBDA_BUCKET") +
+		"/models/" + inferRequest.ModelName + "/output_labels.txt"
 
 	id := uuid.New().String()
 	files := make([]string, 0, 0)
@@ -96,8 +98,8 @@ func InferImage(w http.ResponseWriter, r *http.Request) {
 	// executing the shell binary a.out produces json output that can be unmarshal'ed into
 	// infer response object
 	args := []string{"infer",
-		"--model", inferRequest.ModelPath,
-		"--label", inferRequest.LabelPath}
+		"--model", modelPath,
+		"--label", labelPath}
 	b, err = exec.Command("/srv/files/bin/src/imtool/a.out",
 		append(args, files...)...).Output()
 	if err != nil {
