@@ -41,5 +41,5 @@ func init() {
 
 	inferCmd.Flags().StringP("model", "m", "", "path to model pb file")
 	inferCmd.Flags().StringP("label", "l", "", "path to labels file")
-	inferCmd.Flags().StringSliceP("file", "f", []string{}, "file or folder on disk")
+	inferCmd.Flags().StringSliceP("file", "f", []string{}, "file or folder or - for STDIN")
 }

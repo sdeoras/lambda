@@ -1,6 +1,8 @@
 package infer
 
 import (
+	"bufio"
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -9,11 +11,11 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"sync"
 
 	"cloud.google.com/go/storage"
 	"github.com/golang/protobuf/proto"
-	"github.com/google/uuid"
 	"github.com/sdeoras/lambda/api"
 )
 
@@ -25,6 +27,10 @@ const (
 	imtoolPath = "/srv/files/bin/src/imtool"
 	imtoolExec = imtoolPath + "/a.out"
 	imtoolLib  = imtoolPath + "/lib"
+
+	// why in /tmp?
+	// pl. read: https://stackoverflow.com/questions/42719793/write-temporary-files-from-google-cloud-function
+	imtoolModels = "/tmp" + "/" + modelDir
 
 	// model location and convention
 	modelDir   = "models"
@@ -57,6 +63,59 @@ func writeToGS(ctx context.Context, bucketName, fileName string, buffer []byte) 
 	w := obj.NewWriter(ctx)
 	defer w.Close()
 	return w.Write(buffer)
+}
+
+func copyModelIfNotExists(ctx context.Context, modelName, version string) error {
+	localFolder := filepath.Join(imtoolModels, modelName, version)
+	if _, err := os.Stat(localFolder); err == nil {
+		return nil
+	} else if os.IsNotExist(err) {
+		if err := os.MkdirAll(localFolder, 0755); err != nil {
+			return err
+		}
+
+		client, err := storage.NewClient(ctx)
+		if err != nil {
+			return err
+		}
+
+		bucket := client.Bucket(os.Getenv("LAMBDA_BUCKET"))
+
+		obj := bucket.Object(filepath.Join(modelDir, modelName, version, graphFile))
+		r, err := obj.NewReader(ctx)
+		if err != nil {
+			return err
+		}
+
+		b, err := ioutil.ReadAll(r)
+		if err != nil {
+			return err
+		}
+
+		if err := ioutil.WriteFile(filepath.Join(localFolder, graphFile), b, 0644); err != nil {
+			return err
+		}
+
+		obj = bucket.Object(filepath.Join(modelDir, modelName, version, labelsFile))
+		r, err = obj.NewReader(ctx)
+		if err != nil {
+			return err
+		}
+
+		b, err = ioutil.ReadAll(r)
+		if err != nil {
+			return err
+		}
+
+		if err := ioutil.WriteFile(filepath.Join(localFolder, labelsFile), b, 0644); err != nil {
+			return err
+		}
+
+	} else {
+		return fmt.Errorf("unknown file existance status:%v", err)
+	}
+
+	return nil
 }
 
 // InferImage provides image inferencing using imtool exec. It depends on a model and a
@@ -114,71 +173,68 @@ func InferImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	modelFolder := fmt.Sprintf("gs://%s/%s/%s/%s",
-		os.Getenv("LAMBDA_BUCKET"),
-		modelDir,
-		inferRequest.ModelName,
-		inferRequest.ModelVersion)
-
-	modelPath := fmt.Sprintf("%s/%s",
-		modelFolder,
-		graphFile)
-	labelPath := fmt.Sprintf("%s/%s",
-		modelFolder,
-		labelsFile)
-
-	id := uuid.New().String()
-	files := make([]string, 0, 0)
-	for _, image := range inferRequest.Images {
-		fileName := image.Name + "_" + id + ".jpg"
-		file := fmt.Sprintf("gs://%s/%s/%s/%s",
-			os.Getenv("LAMBDA_BUCKET"),
-			imageDir,
-			inferRequest.ModelName,
-			fileName)
-		files = append(files, file)
-
-		objName := fmt.Sprintf("%s/%s/%s",
-			imageDir,
-			inferRequest.ModelName,
-			fileName)
-
-		// write file to gcs
-		if n, err := writeToGS(context.Background(),
-			os.Getenv("LAMBDA_BUCKET"),
-			objName, image.Data); err != nil {
-			http.Error(w, fmt.Sprintf("could not successfull write to gcs bucket:%v", err), http.StatusInternalServerError)
-			return
-		} else {
-			if n != len(image.Data) {
-				http.Error(w, fmt.Sprintf("could not successfull write all data to gcs bucket:%v of %v", n, len(image.Data)), http.StatusInternalServerError)
-				return
-			}
-		}
-	}
-
-	// executing the shell binary a.out produces json output that can be unmarshal'ed into
-	// infer response object
-	args := []string{"infer",
-		"--model", modelPath,
-		"--label", labelPath}
-	b, err = exec.Command(imtoolExec,
-		append(args, files...)...).Output()
-	if err != nil {
+	if err := copyModelIfNotExists(context.Background(), inferRequest.ModelName,
+		inferRequest.ModelVersion); err != nil {
 		http.Error(w,
-			fmt.Sprintf("could not successfully run infer:%v:imtool %v %v", err, args, files),
+			fmt.Sprintf("could not copy model or check existence:%v", err),
 			http.StatusInternalServerError)
 		return
 	}
+
+	localFolder := filepath.Join(imtoolModels, inferRequest.ModelName, inferRequest.ModelVersion)
+	modelPath := filepath.Join(localFolder, graphFile)
+	labelPath := filepath.Join(localFolder, labelsFile)
 
 	response := new(api.InferImageResponse)
-	if err := json.Unmarshal(b, response); err != nil {
-		http.Error(w,
-			fmt.Sprintf("could not successfull unmarshal into response:%v", err),
-			http.StatusInternalServerError)
-		return
+
+	for _, image := range inferRequest.Images {
+		// buffer for writing data
+		bb := new(bytes.Buffer)
+		bw := bufio.NewWriter(bb)
+
+		out := new(api.InferImageResponse)
+
+		// define command and connect STDIN and STDOUT accordingly
+		cmd := exec.Command(imtoolExec,
+			[]string{
+				"infer",
+				"--model", modelPath,
+				"--label", labelPath,
+				"-f", "-", // receive data from STDIN
+			}...)
+		cmd.Stdin = bytes.NewReader(image.Data)
+		cmd.Stdout = bw
+		cmd.Stderr = ioutil.Discard
+
+		// run command
+		if err := cmd.Run(); err != nil {
+			http.Error(w,
+				fmt.Sprintf("could not successfully run imtool:%v", err),
+				http.StatusInternalServerError)
+			return
+		}
+
+		// flush writer
+		if err := bw.Flush(); err != nil {
+			http.Error(w,
+				fmt.Sprintf("error flushing bufio writer:%v", err),
+				http.StatusInternalServerError)
+			return
+		}
+
+		// unmarshal output
+		if err := json.Unmarshal(bb.Bytes(), out); err != nil {
+			http.Error(w,
+				fmt.Sprintf("could not successfull unmarshal into response:%v", err),
+				http.StatusInternalServerError)
+			return
+		}
+
+		// collect output
+		response.Outputs = append(response.Outputs, out.Outputs...)
 	}
 
+	// serialize response as a protobuf
 	b, err = proto.Marshal(response)
 	if err != nil {
 		http.Error(w,
@@ -187,6 +243,7 @@ func InferImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// write that to http response writer
 	n, err := w.Write(b)
 	if err != nil {
 		http.Error(w,

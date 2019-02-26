@@ -5,8 +5,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 
@@ -54,7 +57,20 @@ func inferRunE(cmd *cobra.Command, args []string) error {
 	t := viper.GetInt("/timeout")
 	modelFile := viper.GetString("/infer/modelFile")
 	labelFile := viper.GetString("/infer/labelFile")
-	diskFiles := viper.GetStringSlice("/infer/file")
+	inputFiles := viper.GetStringSlice("/infer/file")
+	inputFiles = append(inputFiles, args...)
+
+	var files []string
+	filesMap := make(map[string]struct{})
+
+	// if not disk file put in map, else put in files slice
+	for _, file := range inputFiles {
+		if file == "-" || strings.Contains(file, "gs://") {
+			filesMap[file] = struct{}{}
+		} else {
+			files = append(files, file)
+		}
+	}
 
 	// do not show usage on error
 	cmd.SilenceUsage = true
@@ -64,12 +80,20 @@ func inferRunE(cmd *cobra.Command, args []string) error {
 	}
 
 	lister := lsdir.NewLister(true, "*")
-	files, err := lister.List(diskFiles...)
+	var err error
+	files, err = lister.List(files...)
 	if err != nil {
 		return fmt.Errorf("error listing files:%v", err)
 	}
 
-	files = append(files, args...)
+	for _, file := range files {
+		filesMap[file] = struct{}{}
+	}
+
+	files = make([]string, 0, len(filesMap))
+	for file := range filesMap {
+		files = append(files, file)
+	}
 
 	if len(files) == 0 {
 		return fmt.Errorf("please provide at least an image to work with")
@@ -149,11 +173,31 @@ func inferRunE(cmd *cobra.Command, args []string) error {
 			l := logrus.WithField("file", fileName)
 
 			// read image data
-			imageData, err := cloudOp.Read(fileName)
-			if err != nil {
-				l.Errorf("error reading file:%v", err)
-				return
+			var imageData []byte
+			var err error
+
+			if strings.Contains(fileName, "gs://") {
+				imageData, err = cloudOp.Read(fileName)
+				if err != nil {
+					l.Errorf("error reading file %s:%v", fileName, err)
+					return
+				}
+			} else {
+				if fileName == "-" {
+					imageData, err = ioutil.ReadAll(os.Stdin)
+					if err != nil {
+						l.Errorf("error reading input on stdin:%v", err)
+						return
+					}
+				} else {
+					imageData, err = ioutil.ReadFile(fileName)
+					if err != nil {
+						l.Errorf("error reading file %s:%v", fileName, err)
+						return
+					}
+				}
 			}
+
 			// decode image
 			im, err := imageOp.Decode(bytes.NewReader(imageData))
 			if err != nil {
