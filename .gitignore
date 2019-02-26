@@ -1,6 +1,7 @@
 .idea
 *.so
 *.zip
+models
 a.out
 lib
 .DS_Store
