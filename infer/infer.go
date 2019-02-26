@@ -8,11 +8,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"lambda/jwt"
+	"lambda/log"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"sync"
+
+	"cloud.google.com/go/logging"
 
 	"cloud.google.com/go/storage"
 	"github.com/golang/protobuf/proto"
@@ -68,6 +71,9 @@ func writeToGS(ctx context.Context, bucketName, fileName string, buffer []byte) 
 func copyModelIfNotExists(ctx context.Context, modelName, version string) error {
 	localFolder := filepath.Join(imtoolModels, modelName, version)
 	if _, err := os.Stat(localFolder); err == nil {
+		if log.Logger != nil {
+			log.Logger.Log(logging.Entry{Payload: "models found in tmp"})
+		}
 		return nil
 	} else if os.IsNotExist(err) {
 		if err := os.MkdirAll(localFolder, 0755); err != nil {
