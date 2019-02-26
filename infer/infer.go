@@ -24,10 +24,13 @@ const (
 	Name        = "infer"
 
 	// paths to run imtool binary
-	imtoolPath   = "/srv/files/bin/src/imtool"
-	imtoolExec   = imtoolPath + "/a.out"
-	imtoolLib    = imtoolPath + "/lib"
-	imtoolModels = imtoolPath + "/" + modelDir
+	imtoolPath = "/srv/files/bin/src/imtool"
+	imtoolExec = imtoolPath + "/a.out"
+	imtoolLib  = imtoolPath + "/lib"
+
+	// why in /tmp?
+	// pl. read: https://stackoverflow.com/questions/42719793/write-temporary-files-from-google-cloud-function
+	imtoolModels = "/tmp" + "/" + modelDir
 
 	// model location and convention
 	modelDir   = "models"
