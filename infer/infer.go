@@ -76,6 +76,10 @@ func copyModelIfNotExists(ctx context.Context, modelName, version string) error 
 		}
 		return nil
 	} else if os.IsNotExist(err) {
+		if log.Logger != nil {
+			log.Logger.Log(logging.Entry{Payload: "models not found in tmp"})
+		}
+
 		if err := os.MkdirAll(localFolder, 0755); err != nil {
 			return err
 		}
@@ -134,6 +138,10 @@ func InferImage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
+	}
+
+	if log.Logger != nil {
+		defer log.Logger.Flush()
 	}
 
 	// check method
