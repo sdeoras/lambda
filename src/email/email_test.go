@@ -2,7 +2,7 @@ package email
 
 import (
 	"io/ioutil"
-	"lambda/jwt"
+	"lambda/src/jwt"
 	"net/http"
 	"net/http/httptest"
 	"os"

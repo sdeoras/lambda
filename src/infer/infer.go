@@ -7,8 +7,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"lambda/jwt"
-	"lambda/log"
+	"lambda/src/jwt"
+	"lambda/src/log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -25,7 +25,7 @@ const (
 	Name        = "infer"
 
 	// paths to run imtool binary
-	imtoolPath = "/srv/files/bin/src/imtool"
+	imtoolPath = "/srv/files/src/bin/src/imtool"
 	imtoolExec = imtoolPath + "/a.out"
 	imtoolLib  = imtoolPath + "/lib"
 
@@ -37,9 +37,6 @@ const (
 	modelDir   = "models"
 	graphFile  = "output_graph.pb"
 	labelsFile = "output_labels.txt"
-
-	// image dir
-	imageDir = "images"
 )
 
 var (
@@ -130,7 +127,7 @@ func InferImage(w http.ResponseWriter, r *http.Request) {
 	// validate input request
 	err := jwt.Validator.Validate(r)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 

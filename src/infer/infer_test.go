@@ -3,7 +3,7 @@ package infer
 import (
 	"fmt"
 	"io/ioutil"
-	"lambda/jwt"
+	"lambda/src/jwt"
 	"net/http"
 	"os"
 	"testing"
