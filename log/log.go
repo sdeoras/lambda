@@ -1,39 +1,20 @@
 package log
 
 import (
-	"context"
+	"log"
 	"os"
-	"path/filepath"
 	"sync"
-
-	"cloud.google.com/go/logging"
-)
-
-const (
-	logID = "gcf-lambda-logs"
 )
 
 var (
-	Logger *logging.Logger
-	once   sync.Once
+	once sync.Once
+	Out  *log.Logger
+	Err  *log.Logger
 )
 
 func init() {
 	once.Do(func() {
-		// Create a Client
-		ctx := context.Background()
-		client, err := logging.NewClient(ctx,
-			filepath.Join(
-				"projects",
-				os.Getenv("GCLOUD_PROJECT_NAME"),
-			),
-		)
-
-		if err != nil {
-			return
-		}
-
-		// Initialize a logger
-		Logger = client.Logger(logID)
+		Out = log.New(os.Stdout, "", 0)
+		Err = log.New(os.Stderr, "", 0)
 	})
 }
