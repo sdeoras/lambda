@@ -14,7 +14,7 @@
 
 package main
 
-import "lambda/bin/src/imtool/cmd"
+import "lambda/src/bin/src/imtool/cmd"
 
 func main() {
 	cmd.Execute()
