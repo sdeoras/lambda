@@ -7,7 +7,7 @@ export GOOGLE_GCF_DOMAIN="${REGION}-${PROJECT}.cloudfunctions.net"
 export CLOUD_FUNCTIONS_BUCKET="${PROJECT}-gcf"
 
 go mod vendor
-zip -r payload-${NAME}.zip lambda.go api src vendor
+zip -r payload-${NAME}.zip lambda.go src vendor
 rm -rf vendor
 gsutil cp payload-${NAME}.zip gs://${CLOUD_FUNCTIONS_BUCKET}
 rm -rf payload-${NAME}.zip
