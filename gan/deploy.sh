@@ -1,6 +1,24 @@
 #!/usr/bin/env bash
 
 export NAME="gan"
+export TOOL="gangen"
+
+# check for dependencies that are not part of git distribution
+if [[ ! -f "src/bin/src/${TOOL}/a.out" ]]; then
+    echo "you need to build a.out for linux/amd64. pl. run src/bin/src/${TOOL}/deploy.sh"
+    exit 1
+fi
+
+if [[ ! -f "src/bin/src/${TOOL}/lib/libtensorflow.so" ]]; then
+    echo "pl. download src/bin/src/${TOOL}/lib/libtensorflow.so for Linux for TF v1.12.0"
+    exit 1
+fi
+
+if [[ ! -f "src/bin/src/${TOOL}/lib/libtensorflow_framework.so" ]]; then
+    echo "pl. download src/bin/src/${TOOL}/lib/libtensorflow_framework.so for Linux for TF v1.12.0"
+    exit 1
+fi
+
 export PROJECT=`gcloud config list 2>/dev/null | grep ^project | awk '{print $3}'`
 export REGION=`gcloud config list 2>/dev/null | grep ^region | awk '{print $3}'`
 export GOOGLE_GCF_DOMAIN="${REGION}-${PROJECT}.cloudfunctions.net"
