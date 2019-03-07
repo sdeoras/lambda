@@ -2,10 +2,12 @@ package gan
 
 import (
 	"gan/src/gen"
-	"gan/src/health"
+	"gan/src/jwt"
 	"net/http"
+	"path/filepath"
 	"sync"
 
+	"github.com/sdeoras/health"
 	"github.com/sdeoras/httprouter"
 )
 
@@ -15,8 +17,7 @@ var (
 )
 
 const (
-	routeHealth = "/health"
-	routeGen    = "/gen"
+	routeGen = "gen"
 )
 
 // Lambda is the main entry point. It immediately calls router and exits.
@@ -27,11 +28,18 @@ func Lambda(w http.ResponseWriter, r *http.Request) {
 // init defines the routes to route traffic to.
 func init() {
 	once.Do(func() {
+		f := func(input string) string {
+			return filepath.Join("/", input)
+		}
+
+		h := health.New(health.OutputProto, jwt.Validator)
+		h.Register(f(routeGen), nil)
+
 		router = httprouter.NewRouter()
 		// register health check endpoint
-		router.Register(routeHealth, health.Check)
+		router.Register(health.StdRoute, h.Provide())
 
 		// register services
-		router.Register(routeGen, gen.GenerateImages)
+		router.Register(f(routeGen), gen.GenerateImages)
 	})
 }
