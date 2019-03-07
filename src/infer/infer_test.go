@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/sdeoras/lambda/api"
+	"github.com/sdeoras/api"
 )
 
 // TestInfer_Remote expects google cloud function to be up and running and it tests against that.

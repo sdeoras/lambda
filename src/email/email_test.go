@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/sdeoras/lambda/api"
+	"github.com/sdeoras/api"
 )
 
 // TestSend_Local tests using locally spawned http test server.

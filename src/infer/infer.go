@@ -17,7 +17,7 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/golang/protobuf/proto"
-	"github.com/sdeoras/lambda/api"
+	"github.com/sdeoras/api"
 )
 
 const (
