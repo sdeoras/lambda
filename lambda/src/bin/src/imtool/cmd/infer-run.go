@@ -13,15 +13,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sdeoras/lsdir"
-
-	"github.com/sdeoras/dispatcher"
-	"github.com/sirupsen/logrus"
-
-	"github.com/sdeoras/lambda/api"
-
+	"github.com/sdeoras/api"
 	"github.com/sdeoras/comp/cloud"
 	"github.com/sdeoras/comp/image"
+	"github.com/sdeoras/dispatcher"
+	"github.com/sdeoras/lsdir"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	tf "github.com/tensorflow/tensorflow/tensorflow/go"

@@ -8,7 +8,6 @@ import (
 	"github.com/sdeoras/api"
 	ganop "github.com/sdeoras/comp/gan"
 	"github.com/sdeoras/comp/gan/ganMnist"
-	pb "github.com/sdeoras/comp/proto"
 )
 
 type generator struct {
@@ -33,7 +32,7 @@ func NewGenerator(model string) (gan.Generator, error) {
 		return nil, err
 	}
 
-	cp := new(pb.Checkpoint)
+	cp := new(api.Checkpoint)
 	if err := proto.Unmarshal(b, cp); err != nil {
 		return nil, err
 	}
