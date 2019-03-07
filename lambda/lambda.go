@@ -2,11 +2,13 @@ package lambda
 
 import (
 	"lambda/src/email"
-	"lambda/src/health"
 	"lambda/src/infer"
+	"lambda/src/jwt"
 	"net/http"
+	"path/filepath"
 	"sync"
 
+	"github.com/sdeoras/health"
 	"github.com/sdeoras/httprouter"
 )
 
@@ -16,9 +18,8 @@ var (
 )
 
 const (
-	routeHealth = "/health"
-	routeEmail  = "/email"
-	routeInfer  = "/infer"
+	routeEmail = "email"
+	routeInfer = "infer"
 )
 
 // Lambda is the main entry point. It immediately calls router and exits.
@@ -29,12 +30,20 @@ func Lambda(w http.ResponseWriter, r *http.Request) {
 // init defines the routes to route traffic to.
 func init() {
 	once.Do(func() {
+		f := func(input string) string {
+			return filepath.Join("/", input)
+		}
+
+		h := health.New(health.OutputProto, jwt.Validator)
+		h.Register(routeEmail, nil)
+		h.Register(routeInfer, nil)
+
 		router = httprouter.NewRouter()
 		// register health check endpoint
-		router.Register(routeHealth, health.Check)
+		router.Register(health.StdRoute, h.Provide())
 
 		// register services
-		router.Register(routeEmail, email.Send)
-		router.Register(routeInfer, infer.InferImage)
+		router.Register(f(routeEmail), email.Send)
+		router.Register(f(routeInfer), infer.InferImage)
 	})
 }
