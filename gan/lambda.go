@@ -32,7 +32,7 @@ func init() {
 			return filepath.Join("/", input)
 		}
 
-		h := health.New(health.OutputProto, jwt.Validator)
+		h := health.New(health.OutputProto, jwt.Manager)
 		h.Register(f(routeGen), nil)
 
 		router = httprouter.NewRouter()

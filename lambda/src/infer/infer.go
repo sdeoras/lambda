@@ -125,7 +125,7 @@ func copyModelIfNotExists(ctx context.Context, modelName, version string) error 
 // in a proto file.
 func InferImage(w http.ResponseWriter, r *http.Request) {
 	// validate input request
-	err := jwt.Validator.Validate(r)
+	err := jwt.Manager.Validate(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
