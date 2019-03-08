@@ -8,16 +8,14 @@ import (
 )
 
 var (
-	once      sync.Once
-	Validator jwt.Validator
-	Requestor jwt.Requestor
+	once    sync.Once
+	Manager jwt.Manager
 )
 
 // init initializes secret key based on environment variable and creates a new
-// jwt token Validator. It also registers some functions to route the traffic to.
+// jwt token Manager. It also registers some functions to route the traffic to.
 func init() {
 	once.Do(func() {
-		Validator = jwt.NewValidator(os.Getenv("JWT_SECRET_KEY"))
-		Requestor = jwt.NewRequestor(os.Getenv("JWT_SECRET_KEY"))
+		Manager = jwt.NewManager(os.Getenv("JWT_SECRET_KEY"))
 	})
 }

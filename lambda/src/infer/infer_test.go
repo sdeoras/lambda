@@ -32,7 +32,7 @@ func TestInfer_Remote(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	req, err := jwt.Requestor.Request(http.MethodPost, "https://"+os.Getenv("GOOGLE_GCF_DOMAIN")+
+	req, err := jwt.Manager.Request(http.MethodPost, "https://"+os.Getenv("GOOGLE_GCF_DOMAIN")+
 		"/"+ProjectName+"/"+Name, nil, b)
 	req.Method = http.MethodPost
 

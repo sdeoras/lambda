@@ -28,7 +28,7 @@ func TestSend_Local(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	req, err := jwt.Requestor.Request(http.MethodPost, "/", nil, b)
+	req, err := jwt.Manager.Request(http.MethodPost, "/", nil, b)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(Send)
@@ -74,7 +74,7 @@ func TestSend_Remote(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	req, err := jwt.Requestor.Request(http.MethodPost, "https://"+os.Getenv("GOOGLE_GCF_DOMAIN")+
+	req, err := jwt.Manager.Request(http.MethodPost, "https://"+os.Getenv("GOOGLE_GCF_DOMAIN")+
 		"/"+ProjectName+"/"+Name, nil, b)
 	req.Method = http.MethodPost
 

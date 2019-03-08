@@ -24,7 +24,7 @@ const (
 // Send sends email via sendgrid api
 func Send(w http.ResponseWriter, r *http.Request) {
 	// validate input request
-	err := jwt.Validator.Validate(r)
+	err := jwt.Manager.Validate(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
