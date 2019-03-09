@@ -37,7 +37,7 @@ func init() {
 
 		router = httprouter.NewRouter()
 		// register health check endpoint
-		router.Register(health.StdRoute, h.Provide())
+		router.Register(health.StdRoute, h.NewHTTPHandler())
 
 		// register services
 		router.Register(f(routeGen), gen.GenerateImages)
