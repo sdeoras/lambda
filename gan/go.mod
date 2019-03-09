@@ -10,7 +10,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/sdeoras/api v0.1.1
 	github.com/sdeoras/comp v0.1.6
-	github.com/sdeoras/health v0.1.2
+	github.com/sdeoras/health v0.1.3
 	github.com/sdeoras/httprouter v0.0.0
 	github.com/sdeoras/jwt v0.0.4
 	github.com/spf13/cobra v0.0.3

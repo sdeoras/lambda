@@ -34,7 +34,7 @@ func init() {
 			return filepath.Join("/", input)
 		}
 
-		h := health.New(health.OutputProto, jwt.Manager)
+		h := health.NewProvider(health.OutputProto, jwt.Manager, nil)
 		h.Register(routeEmail, nil)
 		h.Register(routeInfer, nil)
 
