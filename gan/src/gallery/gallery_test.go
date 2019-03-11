@@ -1,11 +1,13 @@
-package gen
+package gallery
 
 import (
 	"fmt"
+	"gan/src/env"
 	"gan/src/jwt"
+	"gan/src/route"
 	"io/ioutil"
 	"net/http"
-	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/golang/protobuf/proto"
@@ -24,8 +26,9 @@ func TestGen_Remote(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	req, err := jwt.Manager.Request(http.MethodPost, "https://"+os.Getenv("GOOGLE_GCF_DOMAIN")+
-		"/"+ProjectName+"/"+Name, nil, b)
+	req, err := jwt.Manager.Request(http.MethodPost, "https://"+
+		filepath.Join(env.Domain, env.FuncName, route.Gallery),
+		nil, b)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)

@@ -12,7 +12,7 @@ require (
 	github.com/sdeoras/dispatcher v1.0.2
 	github.com/sdeoras/health v0.1.5
 	github.com/sdeoras/httprouter v0.0.0
-	github.com/sdeoras/jwt v0.0.4
+	github.com/sdeoras/jwt v0.0.5
 	github.com/sdeoras/lsdir v0.0.0
 	github.com/sendgrid/rest v2.4.1+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.4.1+incompatible

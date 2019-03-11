@@ -3,6 +3,12 @@
 export NAME="lambda"
 export TOOL="imtool"
 
+if [[ -n "$1" ]]; then
+  export NAME="${NAME}-$1"
+else
+  echo "Deploying to production. To deploy to staging use command: ./deploy.sh staging"
+fi
+
 # check for dependencies that are not part of git distribution
 if [[ ! -f "src/bin/src/${TOOL}/a.out" ]]; then
     echo "you need to build a.out for linux/amd64. pl. run src/bin/src/${TOOL}/deploy.sh"
