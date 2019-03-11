@@ -17,10 +17,9 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/google/uuid"
-
 	"cloud.google.com/go/storage"
 	"github.com/golang/protobuf/proto"
+	"github.com/google/uuid"
 	"github.com/sdeoras/api"
 )
 
