@@ -9,6 +9,7 @@ import (
 	"gan/src/env"
 	"gan/src/jwt"
 	"gan/src/log"
+	"gan/src/login"
 	"gan/src/route"
 	"io/ioutil"
 	"net/http"
@@ -16,6 +17,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sync"
+
+	"github.com/sdeoras/oauth"
 
 	"cloud.google.com/go/storage"
 	"github.com/golang/protobuf/proto"
@@ -110,6 +113,33 @@ func copyModelIfNotExists(ctx context.Context, modelName, version string) error 
 }
 
 func GenerateDriver(w http.ResponseWriter, r *http.Request) {
+	// check if this is a callback from auth provider, else redirect to login page
+	content, err := login.Provider[login.GoogleProvider].GetUserInfo(r)
+	if err != nil {
+		mesg := err.Error()
+		url := "https://" + filepath.Join(
+			env.Domain,
+			env.FuncName,
+			route.Root,
+		)
+		req, err := http.NewRequest(http.MethodGet, url, nil)
+		if err != nil {
+			http.Error(w,
+				fmt.Sprintf("error in gan.GenerateDriver:%s:%s", mesg, err.Error()),
+				http.StatusInternalServerError)
+			return
+		}
+		http.Redirect(w, req, url, http.StatusPermanentRedirect)
+		return
+	}
+
+	// unmarshal contents into a struct
+	ac := new(oauth.GoogleAuthContent)
+	if err := ac.Unmarshal(content); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	request := new(api.GanRequest)
 	request.Count = 10
 	request.ModelName = "gan-mnist-generator"
@@ -250,7 +280,7 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id := filepath.Join("images", uuid.New().String())
+	id := filepath.Join("images", env.FuncName, uuid.New().String())
 
 	for i := range response.Images {
 		if _, err := writeToGS(
@@ -272,8 +302,8 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 		galleryRequest.GalleryItems[i] = &api.GalleryItem{
 			Id:         int64(i),
 			FileName:   filepath.Join(id, fmt.Sprintf("image-%d.jpg", i)),
-			Title:      "title",
-			Caption:    "caption",
+			Title:      "MNIST GAN image",
+			Caption:    "a randomly generated MNIST image using a neural net based generative adversarial network (GAN)",
 			BucketName: os.Getenv("LAMBDA_BUCKET"),
 		}
 	}

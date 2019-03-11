@@ -15,10 +15,10 @@ require (
 	github.com/sdeoras/health v0.1.5
 	github.com/sdeoras/httprouter v0.1.0
 	github.com/sdeoras/jwt v0.0.5
+	github.com/sdeoras/oauth v0.1.3
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/viper v1.3.1
 	go.opencensus.io v0.19.1 // indirect
 	golang.org/x/net v0.0.0-20190311031020-56fb01167e7d // indirect
-	golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421 // indirect
-	golang.org/x/sys v0.0.0-20190310054646-10058d7d4faa // indirect
+	golang.org/x/sys v0.0.0-20190311152110-c8c8c57fd1e1 // indirect
 )
