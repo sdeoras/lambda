@@ -1,8 +1,9 @@
 package gan
 
 import (
-	"gan/src/gen"
+	"gan/src/gallery"
 	"gan/src/jwt"
+	"gan/src/route"
 	"net/http"
 	"path/filepath"
 	"sync"
@@ -16,13 +17,15 @@ var (
 	router httprouter.Router
 )
 
-const (
-	routeGen = "gen"
-)
-
 // Lambda is the main entry point. It immediately calls router and exits.
 func Lambda(w http.ResponseWriter, r *http.Request) {
-	router.Route(w, r)
+	switch router.IsRegistered(r.URL.Path) {
+	case true:
+		router.Route(w, r)
+	default:
+		http.FileServer(http.Dir(filepath.Join(
+			"src", route.Gallery))).ServeHTTP(w, r)
+	}
 }
 
 // init defines the routes to route traffic to.
@@ -33,13 +36,14 @@ func init() {
 		}
 
 		h := health.NewProvider(health.OutputProto, jwt.Manager, nil)
-		h.Register(f(routeGen), nil)
+		h.Register(f(route.Gallery), nil)
 
 		router = httprouter.NewRouter()
 		// register health check endpoint
 		router.Register(health.StdRoute, h.NewHTTPHandler())
 
 		// register services
-		router.Register(f(routeGen), gen.GenerateImages)
+		//router.Register(f(route.Gallery), gen.Show)
+		router.Register(f(route.Gallery), gallery.GenerateDriver)
 	})
 }

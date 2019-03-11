@@ -1,4 +1,4 @@
-package gen
+package gallery
 
 import (
 	"bufio"
@@ -6,8 +6,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"gan/src/env"
 	"gan/src/jwt"
 	"gan/src/log"
+	"gan/src/route"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -15,15 +17,14 @@ import (
 	"path/filepath"
 	"sync"
 
+	"github.com/google/uuid"
+
 	"cloud.google.com/go/storage"
 	"github.com/golang/protobuf/proto"
 	"github.com/sdeoras/api"
 )
 
 const (
-	ProjectName = "gan"
-	Name        = "gen"
-
 	// paths to run imtool binary
 	toolPath = "/srv/files/src/bin/src/gangen"
 	toolBin  = toolPath + "/a.out"
@@ -47,6 +48,25 @@ func init() {
 		_ = os.Setenv("LD_LIBRARY_PATH",
 			toolLib+":"+os.Getenv("LD_LIBRARY_PATH"))
 	})
+}
+
+func writeToGS(ctx context.Context, bucketName, fileName string, buffer []byte, public bool) (int, error) {
+	// Creates a client.
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		return 0, err
+	}
+
+	// Creates a Bucket instance.
+	bucket := client.Bucket(bucketName)
+
+	obj := bucket.Object(fileName)
+	w := obj.NewWriter(ctx)
+	if public {
+		w.ACL = []storage.ACLRule{{Entity: storage.AllUsers, Role: storage.RoleReader}}
+	}
+	defer w.Close()
+	return w.Write(buffer)
 }
 
 func copyModelIfNotExists(ctx context.Context, modelName, version string) error {
@@ -90,19 +110,55 @@ func copyModelIfNotExists(ctx context.Context, modelName, version string) error 
 	return nil
 }
 
+func GenerateDriver(w http.ResponseWriter, r *http.Request) {
+	request := new(api.GanRequest)
+	request.Count = 10
+	request.ModelName = "gan-mnist-generator"
+	request.ModelVersion = "v1"
+
+	b, err := proto.Marshal(request)
+	if err != nil {
+		http.Error(w,
+			"could not marshal gan request",
+			http.StatusInternalServerError)
+		return
+	}
+
+	// Pl. see the link below to understand why jwt passed in header
+	// is not preserved during http redirect call
+	// https://stackoverflow.com/questions/36345696/golang-http-redirect-with-headers
+	// Hence, we pass it in URL
+	url := "https://" + filepath.Join(
+		env.Domain,
+		env.FuncName,
+		route.Gallery,
+	)
+	req, err := jwt.Manager.Request(http.MethodPost, url, nil, b)
+	if err != nil {
+		http.Error(w,
+			fmt.Sprintf("could not successfull create http request:%v", err),
+			http.StatusInternalServerError)
+		return
+	}
+
+	GenerateImages(w, req)
+}
+
 // GenerateImages is a GAN based image generator
 func GenerateImages(w http.ResponseWriter, r *http.Request) {
 	// validate input request
 	err := jwt.Manager.Validate(r)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w,
+			fmt.Sprintf("%s:%s", err.Error(), r.Header.Get("Authorization")),
+			http.StatusBadRequest)
 		return
 	}
 
 	// check method
 	if r.Method != http.MethodPost {
 		http.Error(w,
-			"method not set to POST",
+			"error in gen.GenerateImages: method not set to POST",
 			http.StatusBadRequest)
 		return
 	}
@@ -195,8 +251,36 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	id := filepath.Join("images", uuid.New().String())
+
+	for i := range response.Images {
+		if _, err := writeToGS(
+			context.Background(),
+			os.Getenv("LAMBDA_BUCKET"),
+			filepath.Join(id, fmt.Sprintf("image-%d.jpg", i)),
+			response.Images[i].Data,
+			true); err != nil {
+			http.Error(w,
+				fmt.Sprintf("could not successfull write to gcs:%v", err),
+				http.StatusInternalServerError)
+			return
+		}
+	}
+
+	galleryRequest := new(api.GalleryRequest)
+	galleryRequest.GalleryItems = make([]*api.GalleryItem, len(response.Images))
+	for i := range response.Images {
+		galleryRequest.GalleryItems[i] = &api.GalleryItem{
+			Id:         int64(i),
+			FileName:   filepath.Join(id, fmt.Sprintf("image-%d.jpg", i)),
+			Title:      "title",
+			Caption:    "caption",
+			BucketName: os.Getenv("LAMBDA_BUCKET"),
+		}
+	}
+
 	// serialize response as a protobuf
-	b, err = json.MarshalIndent(response, "", "  ")
+	b, err = proto.Marshal(galleryRequest)
 	if err != nil {
 		http.Error(w,
 			fmt.Sprintf("could not successfull marshal response into proto:%v", err),
@@ -204,20 +288,22 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// write that to http response writer
-	n, err := w.Write(b)
+	// Pl. see the link below to understand why jwt passed in header
+	// is not preserved during http redirect call
+	// https://stackoverflow.com/questions/36345696/golang-http-redirect-with-headers
+	// Hence, we pass it in URL
+	url := "https://" +
+		filepath.Join(env.Domain,
+			env.FuncName,
+			route.Gallery,
+		)
+	req, err := jwt.Manager.Request(http.MethodPost, url, nil, b)
 	if err != nil {
 		http.Error(w,
-			fmt.Sprintf("could not successfull write to response writer:%v", err),
+			fmt.Sprintf("could not successfull create http request:%v", err),
 			http.StatusInternalServerError)
 		return
 	}
 
-	if n != len(b) {
-		http.Error(w,
-			fmt.Sprintf("could not successfull write all data to response writer:%v of %v bytes",
-				n, len(b)),
-			http.StatusInternalServerError)
-		return
-	}
+	Show(w, req)
 }
