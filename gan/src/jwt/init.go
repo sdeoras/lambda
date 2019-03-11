@@ -1,9 +1,9 @@
 package jwt
 
 import (
-	"os"
 	"sync"
 
+	"github.com/google/uuid"
 	"github.com/sdeoras/jwt"
 )
 
@@ -12,10 +12,8 @@ var (
 	Manager jwt.Manager
 )
 
-// init initializes secret key based on environment variable and creates a new
-// jwt token Manager. It also registers some functions to route the traffic to.
 func init() {
 	once.Do(func() {
-		Manager = jwt.NewManager(os.Getenv("JWT_SECRET_KEY"))
+		Manager = jwt.NewManager(uuid.New().String())
 	})
 }

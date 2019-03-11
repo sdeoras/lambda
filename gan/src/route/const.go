@@ -1,5 +1,7 @@
 package route
 
 const (
-	Gallery = "gallery"
+	Root                = ""
+	Gallery             = "gallery"
+	OAuthGoogleCallback = "gallery"
 )

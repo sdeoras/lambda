@@ -3,6 +3,7 @@ package gan
 import (
 	"gan/src/gallery"
 	"gan/src/jwt"
+	"gan/src/login"
 	"gan/src/route"
 	"net/http"
 	"path/filepath"
@@ -43,7 +44,7 @@ func init() {
 		router.Register(health.StdRoute, h.NewHTTPHandler())
 
 		// register services
-		//router.Register(f(route.Gallery), gen.Show)
+		router.Register(f(route.Root), login.Google)
 		router.Register(f(route.Gallery), gallery.GenerateDriver)
 	})
 }
