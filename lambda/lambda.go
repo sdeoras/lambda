@@ -3,7 +3,6 @@ package lambda
 import (
 	"lambda/src/email"
 	"lambda/src/infer"
-	"lambda/src/jwt"
 	"net/http"
 	"path/filepath"
 	"sync"
@@ -34,7 +33,7 @@ func init() {
 			return filepath.Join("/", input)
 		}
 
-		h := health.NewProvider(health.OutputProto, jwt.Manager, nil)
+		h := health.NewProvider(health.OutputProto)
 		h.Register(routeEmail, nil)
 		h.Register(routeInfer, nil)
 

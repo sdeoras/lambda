@@ -2,7 +2,6 @@ package gan
 
 import (
 	"gan/src/gallery"
-	"gan/src/jwt"
 	"gan/src/login"
 	"gan/src/route"
 	"net/http"
@@ -36,7 +35,7 @@ func init() {
 			return filepath.Join("/", input)
 		}
 
-		h := health.NewProvider(health.OutputProto, jwt.Manager, nil)
+		h := health.NewProvider(health.OutputProto)
 		h.Register(f(route.Gallery), nil)
 
 		router = httprouter.NewRouter()
