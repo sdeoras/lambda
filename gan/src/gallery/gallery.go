@@ -18,12 +18,11 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/sdeoras/oauth"
-
 	"cloud.google.com/go/storage"
 	"github.com/golang/protobuf/proto"
 	"github.com/google/uuid"
 	"github.com/sdeoras/api"
+	"github.com/sdeoras/oauth"
 )
 
 const (
