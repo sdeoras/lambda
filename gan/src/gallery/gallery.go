@@ -161,7 +161,7 @@ func GenerateDriver(w http.ResponseWriter, r *http.Request) {
 		env.FuncName,
 		route.Gallery,
 	)
-	req, err := jwt.Manager.Request(http.MethodPost, url, nil, b)
+	req, err := jwt.Manager.NewHTTPRequest(http.MethodPost, url, nil, b)
 	if err != nil {
 		http.Error(w,
 			fmt.Sprintf("could not successfull create http request:%v", err),
@@ -325,7 +325,7 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 			env.FuncName,
 			route.Gallery,
 		)
-	req, err := jwt.Manager.Request(http.MethodPost, url, nil, b)
+	req, err := jwt.Manager.NewHTTPRequest(http.MethodPost, url, nil, b)
 	if err != nil {
 		http.Error(w,
 			fmt.Sprintf("could not successfull create http request:%v", err),
