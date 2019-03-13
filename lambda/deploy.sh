@@ -52,5 +52,5 @@ gcloud functions deploy ${NAME} \
     --set-env-vars=EMAIL_FROM_EMAIL="${EMAIL_FROM_EMAIL}" \
     --set-env-vars=EMAIL_TO_NAME="${EMAIL_TO_NAME}" \
     --set-env-vars=EMAIL_TO_EMAIL="${EMAIL_TO_EMAIL}" \
-    --set-env-vars=LAMBDA_BUCKET="${LAMBDA_BUCKET}" \
+    --set-env-vars=CLOUD_FUNCTIONS_BUCKET="${CLOUD_FUNCTIONS_BUCKET}" \
     --source=gs://${CLOUD_FUNCTIONS_BUCKET}/payload-${NAME}.zip
