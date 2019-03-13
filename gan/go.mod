@@ -16,6 +16,7 @@ require (
 	github.com/sdeoras/jwt v0.0.6
 	github.com/sdeoras/oauth v0.1.3
 	github.com/spf13/cobra v0.0.3
-	github.com/spf13/viper v1.3.1
+	github.com/spf13/viper v1.3.2
 	go.opencensus.io v0.19.1 // indirect
+	golang.org/x/net v0.0.0-20190313082753-5c2c250b6a70 // indirect
 )

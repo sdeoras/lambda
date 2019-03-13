@@ -18,8 +18,10 @@ require (
 	github.com/sendgrid/sendgrid-go v3.4.1+incompatible
 	github.com/sirupsen/logrus v1.4.0
 	github.com/spf13/cobra v0.0.3
-	github.com/spf13/viper v1.3.1
+	github.com/spf13/viper v1.3.2
 	github.com/tensorflow/tensorflow v1.13.1
 	go.opencensus.io v0.19.1 // indirect
+	golang.org/x/crypto v0.0.0-20190313024323-a1f597ede03a // indirect
+	golang.org/x/net v0.0.0-20190313082753-5c2c250b6a70 // indirect
 	golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421 // indirect
 )
