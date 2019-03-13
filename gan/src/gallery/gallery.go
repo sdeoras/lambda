@@ -87,7 +87,7 @@ func copyModelIfNotExists(ctx context.Context, modelName, version string) error 
 			return err
 		}
 
-		bucket := client.Bucket(os.Getenv("LAMBDA_BUCKET"))
+		bucket := client.Bucket(env.Bucket)
 
 		obj := bucket.Object(filepath.Join(modelDir, modelName, version, checkpointFile))
 		r, err := obj.NewReader(ctx)
@@ -192,9 +192,9 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check env var.
-	if len(os.Getenv("LAMBDA_BUCKET")) <= 0 {
+	if len(env.Bucket) <= 0 {
 		http.Error(w,
-			"env var LAMBDA_BUCKET not set",
+			"env var for GCS bucket name is not set",
 			http.StatusInternalServerError)
 		return
 	}
@@ -284,7 +284,7 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 	for i := range response.Images {
 		if _, err := writeToGS(
 			context.Background(),
-			os.Getenv("LAMBDA_BUCKET"),
+			env.Bucket,
 			filepath.Join(id, fmt.Sprintf("image-%d.jpg", i)),
 			response.Images[i].Data,
 			true); err != nil {
@@ -303,7 +303,7 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 			FileName:   filepath.Join(id, fmt.Sprintf("image-%d.jpg", i)),
 			Title:      "MNIST GAN image",
 			Caption:    "a randomly generated MNIST image using a neural net based generative adversarial network (GAN)",
-			BucketName: os.Getenv("LAMBDA_BUCKET"),
+			BucketName: env.Bucket,
 		}
 	}
 

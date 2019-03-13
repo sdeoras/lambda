@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"lambda/src/env"
 	"lambda/src/jwt"
 	"lambda/src/log"
 	"net/http"
@@ -80,7 +81,7 @@ func copyModelIfNotExists(ctx context.Context, modelName, version string) error 
 			return err
 		}
 
-		bucket := client.Bucket(os.Getenv("LAMBDA_BUCKET"))
+		bucket := client.Bucket(env.Bucket)
 
 		obj := bucket.Object(filepath.Join(modelDir, modelName, version, graphFile))
 		r, err := obj.NewReader(ctx)
@@ -140,9 +141,9 @@ func InferImage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check env var.
-	if len(os.Getenv("LAMBDA_BUCKET")) <= 0 {
+	if len(env.Bucket) <= 0 {
 		http.Error(w,
-			"env var LAMBDA_BUCKET not set",
+			"env var for GCS bucket is not set",
 			http.StatusInternalServerError)
 		return
 	}

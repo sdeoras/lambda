@@ -13,6 +13,7 @@ var (
 	ClientSecret string
 	JwtSecret    string
 	CodeLocation string
+	Bucket       string
 )
 
 func init() {
@@ -23,5 +24,6 @@ func init() {
 		ClientSecret = os.Getenv("GOOGLE_CLIENT_SECRET")
 		JwtSecret = os.Getenv("JWT_SECRET_KEY")
 		CodeLocation = os.Getenv("CODE_LOCATION")
+		Bucket = os.Getenv("CLOUD_FUNCTIONS_BUCKET")
 	})
 }
