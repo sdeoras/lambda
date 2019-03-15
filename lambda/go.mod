@@ -1,16 +1,16 @@
 module lambda
 
+go 1.12
+
 require (
 	cloud.google.com/go v0.37.0
-	github.com/golang/protobuf v1.3.0
-	github.com/google/uuid v1.1.1 // indirect
-	github.com/hashicorp/golang-lru v0.5.1 // indirect
+	github.com/golang/protobuf v1.3.1
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/sdeoras/api v0.1.2
 	github.com/sdeoras/comp v0.1.6
 	github.com/sdeoras/dispatcher v1.0.2
-	github.com/sdeoras/health v0.1.6
+	github.com/sdeoras/health v0.1.10
 	github.com/sdeoras/httprouter v0.1.0
 	github.com/sdeoras/jwt v0.0.6
 	github.com/sdeoras/lsdir v0.0.0
@@ -20,8 +20,4 @@ require (
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/viper v1.3.2
 	github.com/tensorflow/tensorflow v1.13.1
-	go.opencensus.io v0.19.1 // indirect
-	golang.org/x/crypto v0.0.0-20190313024323-a1f597ede03a // indirect
-	golang.org/x/net v0.0.0-20190313082753-5c2c250b6a70 // indirect
-	golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421 // indirect
 )

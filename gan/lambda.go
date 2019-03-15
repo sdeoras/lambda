@@ -36,7 +36,7 @@ func init() {
 		}
 
 		h := health.NewProvider(health.OutputProto)
-		h.Register(f(route.Gallery), nil)
+		h.Register(route.Gallery, nil)
 
 		router = httprouter.NewRouter()
 		// register health check endpoint
