@@ -14,6 +14,7 @@ var (
 
 func init() {
 	once.Do(func() {
-		Manager = jwt.NewManager(uuid.New().String())
+		Manager = jwt.NewManager(uuid.New().String(),
+			jwt.EnforceExpiration())
 	})
 }
