@@ -1,9 +1,9 @@
 package jwt
 
 import (
+	"gan/src/env"
 	"sync"
 
-	"github.com/google/uuid"
 	"github.com/sdeoras/jwt"
 )
 
@@ -14,7 +14,8 @@ var (
 
 func init() {
 	once.Do(func() {
-		Manager = jwt.NewManager(uuid.New().String(),
-			jwt.EnforceExpiration())
+		Manager = jwt.NewManager(env.JwtSecret,
+			jwt.EnforceExpiration(),
+		)
 	})
 }

@@ -17,11 +17,13 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sync"
+	"time"
 
 	"cloud.google.com/go/storage"
 	"github.com/golang/protobuf/proto"
 	"github.com/google/uuid"
 	"github.com/sdeoras/api"
+	jwt2 "github.com/sdeoras/jwt"
 	"github.com/sdeoras/oauth"
 )
 
@@ -124,7 +126,8 @@ func GenerateDriver(w http.ResponseWriter, r *http.Request) {
 		req, err := http.NewRequest(http.MethodGet, url, nil)
 		if err != nil {
 			http.Error(w,
-				fmt.Sprintf("error in gan.GenerateDriver:%s:%s", mesg, err.Error()),
+				fmt.Sprintf("%v:error in gan.GenerateDriver:%s:%s",
+					http.StatusInternalServerError, mesg, err.Error()),
 				http.StatusInternalServerError)
 			return
 		}
@@ -135,7 +138,10 @@ func GenerateDriver(w http.ResponseWriter, r *http.Request) {
 	// unmarshal contents into a struct
 	ac := new(oauth.GoogleAuthContent)
 	if err := ac.Unmarshal(content); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w,
+			fmt.Sprintf("%v:%v",
+				http.StatusInternalServerError, err.Error()),
+			http.StatusInternalServerError)
 		return
 	}
 
@@ -147,7 +153,8 @@ func GenerateDriver(w http.ResponseWriter, r *http.Request) {
 	b, err := proto.Marshal(request)
 	if err != nil {
 		http.Error(w,
-			"could not marshal gan request",
+			fmt.Sprintf("%v:could not marshal gan request",
+				http.StatusInternalServerError),
 			http.StatusInternalServerError)
 		return
 	}
@@ -161,10 +168,15 @@ func GenerateDriver(w http.ResponseWriter, r *http.Request) {
 		env.FuncName,
 		route.Gallery,
 	)
-	req, err := jwt.Manager.NewHTTPRequest(http.MethodPost, url, nil, b)
+
+	jwtClientManager := jwt2.NewManager(env.JwtSecret,
+		jwt2.SetLifeSpan(time.Second))
+
+	req, err := jwtClientManager.NewHTTPRequest(http.MethodPost, url, nil, b)
 	if err != nil {
 		http.Error(w,
-			fmt.Sprintf("could not successfull create http request:%v", err),
+			fmt.Sprintf("%v:could not successfull create http request:%v",
+				http.StatusInternalServerError, err),
 			http.StatusInternalServerError)
 		return
 	}
@@ -178,7 +190,7 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 	err := jwt.Manager.Validate(r)
 	if err != nil {
 		http.Error(w,
-			fmt.Sprintf("%s:%s", err.Error(), r.Header.Get("Authorization")),
+			fmt.Sprintf("%v:%s", http.StatusBadRequest, err.Error()),
 			http.StatusBadRequest)
 		return
 	}
@@ -186,7 +198,8 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 	// check method
 	if r.Method != http.MethodPost {
 		http.Error(w,
-			"error in gen.GenerateImages: method not set to POST",
+			fmt.Sprintf("%v:%s", http.StatusBadRequest,
+				"error in gen.GenerateImages: method not set to POST"),
 			http.StatusBadRequest)
 		return
 	}
@@ -194,7 +207,8 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 	// check env var.
 	if len(env.Bucket) <= 0 {
 		http.Error(w,
-			"env var for GCS bucket name is not set",
+			fmt.Sprintf("%v:%s", http.StatusInternalServerError,
+				"env var for GCS bucket name is not set"),
 			http.StatusInternalServerError)
 		return
 	}
@@ -202,7 +216,8 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w,
-			fmt.Sprintf("error reading http request body:%v", err),
+			fmt.Sprintf("%v:error reading http request body:%v",
+				http.StatusBadRequest, err),
 			http.StatusBadRequest)
 		return
 	}
@@ -211,7 +226,8 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 	request := new(api.GanRequest)
 	if err := proto.Unmarshal(b, request); err != nil {
 		http.Error(w,
-			fmt.Sprintf("could not unmarshal image infer request:%v", err),
+			fmt.Sprintf("%v:could not unmarshal image infer request:%v",
+				http.StatusBadRequest, err),
 			http.StatusBadRequest)
 		return
 	}
@@ -221,7 +237,8 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 		len(request.ModelVersion) == 0 ||
 		request.Count <= 0 {
 		http.Error(w,
-			fmt.Sprintf("invalid infer request, some fields are empty"),
+			fmt.Sprintf("%v:invalid infer request, some fields are empty",
+				http.StatusBadRequest),
 			http.StatusBadRequest)
 		return
 	}
@@ -229,7 +246,8 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 	if err := copyModelIfNotExists(context.Background(), request.ModelName,
 		request.ModelVersion); err != nil {
 		http.Error(w,
-			fmt.Sprintf("could not copy model or check existence:%v", err),
+			fmt.Sprintf("%v:could not copy model or check existence:%v",
+				http.StatusInternalServerError, err),
 			http.StatusInternalServerError)
 		return
 	}
@@ -258,7 +276,8 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 	// run command
 	if err := cmd.Run(); err != nil {
 		http.Error(w,
-			fmt.Sprintf("could not successfully run imtool:%v", err),
+			fmt.Sprintf("%v:could not successfully run imtool:%v",
+				http.StatusInternalServerError, err),
 			http.StatusInternalServerError)
 		return
 	}
@@ -266,7 +285,8 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 	// flush writer
 	if err := bw.Flush(); err != nil {
 		http.Error(w,
-			fmt.Sprintf("error flushing bufio writer:%v", err),
+			fmt.Sprintf("%v:error flushing bufio writer:%v",
+				http.StatusInternalServerError, err),
 			http.StatusInternalServerError)
 		return
 	}
@@ -274,7 +294,8 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 	// unmarshal output
 	if err := json.Unmarshal(bb.Bytes(), response); err != nil {
 		http.Error(w,
-			fmt.Sprintf("could not successfull unmarshal into response:%v", err),
+			fmt.Sprintf("%v:could not successfull unmarshal into response:%v",
+				http.StatusInternalServerError, err),
 			http.StatusInternalServerError)
 		return
 	}
@@ -289,7 +310,8 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 			response.Images[i].Data,
 			true); err != nil {
 			http.Error(w,
-				fmt.Sprintf("could not successfull write to gcs:%v", err),
+				fmt.Sprintf("%v:could not successfull write to gcs:%v",
+					http.StatusInternalServerError, err),
 				http.StatusInternalServerError)
 			return
 		}
@@ -311,7 +333,8 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 	b, err = proto.Marshal(galleryRequest)
 	if err != nil {
 		http.Error(w,
-			fmt.Sprintf("could not successfull marshal response into proto:%v", err),
+			fmt.Sprintf("%v:could not successfull marshal response into proto:%v",
+				http.StatusInternalServerError, err),
 			http.StatusInternalServerError)
 		return
 	}
@@ -325,10 +348,15 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 			env.FuncName,
 			route.Gallery,
 		)
-	req, err := jwt.Manager.NewHTTPRequest(http.MethodPost, url, nil, b)
+
+	jwtClientManager := jwt2.NewManager(env.JwtSecret,
+		jwt2.SetLifeSpan(time.Second))
+
+	req, err := jwtClientManager.NewHTTPRequest(http.MethodPost, url, nil, b)
 	if err != nil {
 		http.Error(w,
-			fmt.Sprintf("could not successfull create http request:%v", err),
+			fmt.Sprintf("%v:could not successfull create http request:%v",
+				http.StatusInternalServerError, err),
 			http.StatusInternalServerError)
 		return
 	}

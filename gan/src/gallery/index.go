@@ -17,14 +17,17 @@ func Show(w http.ResponseWriter, r *http.Request) {
 	// validate input request
 	err := jwt.Manager.Validate(r)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf("%v:%v",
+			http.StatusBadRequest, err),
+			http.StatusBadRequest)
 		return
 	}
 
 	// check method
 	if r.Method != http.MethodPost {
 		http.Error(w,
-			"error in gallery.Show: method not set to POST",
+			fmt.Sprintf("%v:error in gallery.Show: method not set to POST",
+				http.StatusBadRequest),
 			http.StatusBadRequest)
 		return
 	}
@@ -32,7 +35,8 @@ func Show(w http.ResponseWriter, r *http.Request) {
 	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w,
-			fmt.Sprintf("error reading http request body:%v", err),
+			fmt.Sprintf("%v:error reading http request body:%v",
+				http.StatusBadRequest, err),
 			http.StatusBadRequest)
 		return
 	}
@@ -41,7 +45,8 @@ func Show(w http.ResponseWriter, r *http.Request) {
 	request := new(api.GalleryRequest)
 	if err := proto.Unmarshal(b, request); err != nil {
 		http.Error(w,
-			fmt.Sprintf("could not unmarshal image infer request:%v", err),
+			fmt.Sprintf("%v:could not unmarshal image infer request:%v",
+				http.StatusBadRequest, err),
 			http.StatusBadRequest)
 		return
 	}
@@ -49,12 +54,16 @@ func Show(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles(
 		filepath.Join("src", route.Gallery, "index.html"))
 	if err != nil {
-		http.Error(w, fmt.Sprintf("%s:%v", "error creating new template", err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("%v:%s:%v",
+			http.StatusInternalServerError, "error creating new template", err),
+			http.StatusInternalServerError)
 		return
 	}
 
 	if err := tmpl.Execute(w, request); err != nil {
-		http.Error(w, fmt.Sprintf("%s:%v", "error executing template", err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("%v:%s:%v",
+			http.StatusInternalServerError, "error executing template", err),
+			http.StatusInternalServerError)
 		return
 	}
 }
