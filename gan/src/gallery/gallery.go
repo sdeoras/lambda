@@ -17,13 +17,11 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sync"
-	"time"
 
 	"cloud.google.com/go/storage"
 	"github.com/golang/protobuf/proto"
 	"github.com/google/uuid"
 	"github.com/sdeoras/api"
-	jwt2 "github.com/sdeoras/jwt"
 	"github.com/sdeoras/oauth"
 )
 
@@ -169,10 +167,7 @@ func GenerateDriver(w http.ResponseWriter, r *http.Request) {
 		route.Gallery,
 	)
 
-	jwtClientManager := jwt2.NewManager(env.JwtSecret,
-		jwt2.SetLifeSpan(time.Second))
-
-	req, err := jwtClientManager.NewHTTPRequest(http.MethodPost, url, nil, b)
+	req, err := jwt.Manager.NewHTTPRequest(http.MethodPost, url, nil, b)
 	if err != nil {
 		http.Error(w,
 			fmt.Sprintf("%v:could not successfull create http request:%v",
@@ -349,10 +344,7 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 			route.Gallery,
 		)
 
-	jwtClientManager := jwt2.NewManager(env.JwtSecret,
-		jwt2.SetLifeSpan(time.Second))
-
-	req, err := jwtClientManager.NewHTTPRequest(http.MethodPost, url, nil, b)
+	req, err := jwt.Manager.NewHTTPRequest(http.MethodPost, url, nil, b)
 	if err != nil {
 		http.Error(w,
 			fmt.Sprintf("%v:could not successfull create http request:%v",
