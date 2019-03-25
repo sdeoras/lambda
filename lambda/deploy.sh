@@ -2,6 +2,7 @@
 
 export NAME="lambda"
 export TOOL="imtool"
+SERVICES=("infer" "email")
 
 if [[ -n "$1" ]]; then
   export NAME="${NAME}-$1"
@@ -54,3 +55,9 @@ gcloud functions deploy ${NAME} \
     --set-env-vars=EMAIL_TO_EMAIL="${EMAIL_TO_EMAIL}" \
     --set-env-vars=CLOUD_FUNCTIONS_BUCKET="${CLOUD_FUNCTIONS_BUCKET}" \
     --source=gs://${CLOUD_FUNCTIONS_BUCKET}/payload-${NAME}.zip
+
+# do health checks on all services
+echo "Performing health checks..."
+for SERVICE in ${SERVICES[@]}; do
+    echo "${NAME}/${SERVICE}    " `curl "https://${GOOGLE_GCF_DOMAIN}/${NAME}/health/?format=mesg&service=${SERVICE}" 2>/dev/null`
+done
