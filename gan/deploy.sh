@@ -31,11 +31,10 @@ export REGION=`gcloud config list 2>/dev/null | grep ^region | awk '{print $3}'`
 export GOOGLE_GCF_DOMAIN="${REGION}-${PROJECT}.cloudfunctions.net"
 export CLOUD_FUNCTIONS_BUCKET="${PROJECT}-gcf"
 
-go mod vendor
+go mod vendor 2> /dev/null
 zip -r payload-${NAME}.zip lambda.go src vendor
-rm -rf vendor
 gsutil cp payload-${NAME}.zip gs://${CLOUD_FUNCTIONS_BUCKET}
-rm -rf payload-${NAME}.zip
+rm -rf vendor payload-${NAME}.zip
 
 gcloud functions deploy ${NAME} \
     --region=${REGION} \
@@ -59,5 +58,6 @@ gcloud functions deploy ${NAME} \
 # do health checks on all services
 echo "Performing health checks..."
 for SERVICE in ${SERVICES[@]}; do
-    echo "${NAME}/${SERVICE}" `curl "https://${GOOGLE_GCF_DOMAIN}/${NAME}/health/?format=mesg&service=${SERVICE}" 2>/dev/null`
+    echo "${NAME}/${SERVICE}" \
+    `curl "https://${GOOGLE_GCF_DOMAIN}/${NAME}/health/?format=mesg&service=${SERVICE}" 2>/dev/null`
 done
