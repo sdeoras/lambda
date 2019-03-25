@@ -11,7 +11,7 @@ import (
 	"strconv"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/sdeoras/api"
+	"github.com/sdeoras/api/pb"
 	sendgrid "github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
@@ -37,7 +37,7 @@ func Send(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	sendRequest := new(api.EmailRequest)
+	sendRequest := new(pb.EmailRequest)
 	if err := proto.Unmarshal(b, sendRequest); err != nil {
 		http.Error(w, fmt.Sprintf("could not unmarshal email send request:%v", err), http.StatusBadRequest)
 		return
@@ -56,15 +56,15 @@ func Send(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("could not send email request:%v", err), http.StatusInternalServerError)
 		return
 	} else {
-		sendResponse := new(api.EmailResponse)
+		sendResponse := new(pb.EmailResponse)
 
 		sendResponse.StatusCode = int64(response.StatusCode)
 		sendResponse.Body = response.Body
-		sendResponse.Headers = make(map[string]*api.ListOfString)
+		sendResponse.Headers = make(map[string]*pb.ListOfString)
 
 		for key, val := range response.Headers {
 			key, val := key, val
-			listOfString := new(api.ListOfString)
+			listOfString := new(pb.ListOfString)
 			listOfString.Value = val
 			sendResponse.Headers[key] = listOfString
 		}

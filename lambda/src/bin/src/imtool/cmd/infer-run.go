@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sdeoras/api"
+	"github.com/sdeoras/api/pb"
 	"github.com/sdeoras/comp/cloud"
 	"github.com/sdeoras/comp/image"
 	"github.com/sdeoras/dispatcher"
@@ -158,8 +158,8 @@ func inferRunE(cmd *cobra.Command, args []string) error {
 		}
 	}()
 
-	response := new(api.InferImageResponse)
-	response.Outputs = make([]*api.InferOutput, 0, 0)
+	response := new(pb.InferImageResponse)
+	response.Outputs = make([]*pb.InferOutput, 0, 0)
 	mu := new(sync.Mutex)
 
 	for _, fileName := range files {
@@ -244,7 +244,7 @@ func inferRunE(cmd *cobra.Command, args []string) error {
 
 				sort.Sort(scores(s))
 
-				out := new(api.InferOutput)
+				out := new(pb.InferOutput)
 				out.Label = labels[s[0].Index]
 				out.Name = fileName
 				out.Probability = int64(s[0].value * 100)

@@ -1,7 +1,7 @@
 package jwt
 
 import (
-	"lambda/src/env"
+	"lambda/src/config"
 	"sync"
 
 	"github.com/sdeoras/jwt"
@@ -16,7 +16,7 @@ var (
 // jwt token Manager. It also registers some functions to route the traffic to.
 func init() {
 	once.Do(func() {
-		Manager = jwt.NewManager(env.JwtSecret,
+		Manager = jwt.NewManager(config.Config.JwtSecret,
 			jwt.EnforceExpiration())
 	})
 }

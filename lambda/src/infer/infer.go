@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"lambda/src/env"
+	"lambda/src/config"
 	"lambda/src/jwt"
 	"lambda/src/log"
 	"net/http"
@@ -18,7 +18,7 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/golang/protobuf/proto"
-	"github.com/sdeoras/api"
+	"github.com/sdeoras/api/pb"
 )
 
 const (
@@ -81,7 +81,7 @@ func copyModelIfNotExists(ctx context.Context, modelName, version string) error 
 			return err
 		}
 
-		bucket := client.Bucket(env.Bucket)
+		bucket := client.Bucket(config.Config.BucketName)
 
 		obj := bucket.Object(filepath.Join(modelDir, modelName, version, graphFile))
 		r, err := obj.NewReader(ctx)
@@ -141,7 +141,7 @@ func InferImage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check env var.
-	if len(env.Bucket) <= 0 {
+	if len(config.Config.BucketName) <= 0 {
 		http.Error(w,
 			"env var for GCS bucket is not set",
 			http.StatusInternalServerError)
@@ -157,7 +157,7 @@ func InferImage(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	inferRequest := new(api.InferImageRequest)
+	inferRequest := new(pb.InferImageRequest)
 	if err := proto.Unmarshal(b, inferRequest); err != nil {
 		http.Error(w,
 			fmt.Sprintf("could not unmarshal image infer request:%v", err),
@@ -187,14 +187,14 @@ func InferImage(w http.ResponseWriter, r *http.Request) {
 	modelPath := filepath.Join(localFolder, graphFile)
 	labelPath := filepath.Join(localFolder, labelsFile)
 
-	response := new(api.InferImageResponse)
+	response := new(pb.InferImageResponse)
 
 	for _, image := range inferRequest.Images {
 		// buffer for writing data
 		bb := new(bytes.Buffer)
 		bw := bufio.NewWriter(bb)
 
-		out := new(api.InferImageResponse)
+		out := new(pb.InferImageResponse)
 
 		// define command and connect STDIN and STDOUT accordingly
 		cmd := exec.Command(imtoolExec,
