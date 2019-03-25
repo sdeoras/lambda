@@ -1,7 +1,7 @@
 package login
 
 import (
-	"gan/src/env"
+	"gan/src/config"
 	"gan/src/route"
 	"net/http"
 	"path/filepath"
@@ -12,6 +12,7 @@ import (
 
 const (
 	GoogleProvider = "google"
+	https          = "https://"
 )
 
 var (
@@ -22,12 +23,15 @@ var (
 func init() {
 	once.Do(func() {
 		Provider = make(map[string]oauth.Provider)
-		redirectUrl := "https://" + filepath.Join(
-			env.Domain,
-			env.FuncName,
+		redirectUrl := https + filepath.Join(
+			config.Config.Domain,
+			config.Config.FuncName,
 			route.OAuthGoogleCallback)
 		Provider[GoogleProvider] = oauth.NewGoogleProvider(
-			redirectUrl, env.ClientId, env.ClientSecret)
+			redirectUrl,
+			config.Config.Oauth.Google.ClientId,
+			config.Config.Oauth.Google.ClientSecret,
+		)
 	})
 }
 

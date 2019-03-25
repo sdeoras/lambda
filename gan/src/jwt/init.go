@@ -1,7 +1,7 @@
 package jwt
 
 import (
-	"gan/src/env"
+	"gan/src/config"
 	"sync"
 	"time"
 
@@ -15,7 +15,7 @@ var (
 
 func init() {
 	once.Do(func() {
-		Manager = jwt.NewManager(env.JwtSecret,
+		Manager = jwt.NewManager(config.Config.JwtSecret,
 			jwt.EnforceExpiration(),      // on the server side ensure jwt token has expiry
 			jwt.SetLifeSpan(time.Second), // on the client side put expiry in jwt token
 		)

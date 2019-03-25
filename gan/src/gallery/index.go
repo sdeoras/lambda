@@ -10,7 +10,7 @@ import (
 	"text/template"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/sdeoras/api"
+	"github.com/sdeoras/api/pb"
 )
 
 func Show(w http.ResponseWriter, r *http.Request) {
@@ -42,7 +42,7 @@ func Show(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	request := new(api.GalleryRequest)
+	request := new(pb.GalleryRequest)
 	if err := proto.Unmarshal(b, request); err != nil {
 		http.Error(w,
 			fmt.Sprintf("%v:could not unmarshal image infer request:%v",

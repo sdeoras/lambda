@@ -6,7 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"gan/src/env"
+	"gan/src/config"
 	"gan/src/jwt"
 	"gan/src/log"
 	"gan/src/login"
@@ -21,7 +21,7 @@ import (
 	"cloud.google.com/go/storage"
 	"github.com/golang/protobuf/proto"
 	"github.com/google/uuid"
-	"github.com/sdeoras/api"
+	"github.com/sdeoras/api/pb"
 	"github.com/sdeoras/oauth"
 )
 
@@ -87,7 +87,7 @@ func copyModelIfNotExists(ctx context.Context, modelName, version string) error 
 			return err
 		}
 
-		bucket := client.Bucket(env.Bucket)
+		bucket := client.Bucket(config.Config.BucketName)
 
 		obj := bucket.Object(filepath.Join(modelDir, modelName, version, checkpointFile))
 		r, err := obj.NewReader(ctx)
@@ -117,8 +117,8 @@ func GenerateDriver(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		mesg := err.Error()
 		url := "https://" + filepath.Join(
-			env.Domain,
-			env.FuncName,
+			config.Config.Domain,
+			config.Config.FuncName,
 			route.Root,
 		)
 		req, err := http.NewRequest(http.MethodGet, url, nil)
@@ -143,7 +143,7 @@ func GenerateDriver(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	request := new(api.GanRequest)
+	request := new(pb.GanRequest)
 	request.Count = 10
 	request.ModelName = "gan-mnist-generator"
 	request.ModelVersion = "v1"
@@ -162,8 +162,8 @@ func GenerateDriver(w http.ResponseWriter, r *http.Request) {
 	// https://stackoverflow.com/questions/36345696/golang-http-redirect-with-headers
 	// Hence, we pass it in URL
 	url := "https://" + filepath.Join(
-		env.Domain,
-		env.FuncName,
+		config.Config.Domain,
+		config.Config.FuncName,
 		route.Gallery,
 	)
 
@@ -182,8 +182,7 @@ func GenerateDriver(w http.ResponseWriter, r *http.Request) {
 // GenerateImages is a GAN based image generator
 func GenerateImages(w http.ResponseWriter, r *http.Request) {
 	// validate input request
-	err := jwt.Manager.Validate(r)
-	if err != nil {
+	if err := jwt.Manager.Validate(r); err != nil {
 		http.Error(w,
 			fmt.Sprintf("%v:%s", http.StatusBadRequest, err.Error()),
 			http.StatusBadRequest)
@@ -200,7 +199,7 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check env var.
-	if len(env.Bucket) <= 0 {
+	if len(config.Config.BucketName) <= 0 {
 		http.Error(w,
 			fmt.Sprintf("%v:%s", http.StatusInternalServerError,
 				"env var for GCS bucket name is not set"),
@@ -218,7 +217,7 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	request := new(api.GanRequest)
+	request := new(pb.GanRequest)
 	if err := proto.Unmarshal(b, request); err != nil {
 		http.Error(w,
 			fmt.Sprintf("%v:could not unmarshal image infer request:%v",
@@ -250,7 +249,7 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 	localFolder := filepath.Join(toolModels, request.ModelName, request.ModelVersion)
 	modelPath := filepath.Join(localFolder, checkpointFile)
 
-	response := new(api.GanResponse)
+	response := new(pb.GanResponse)
 
 	// buffer for writing data
 	bb := new(bytes.Buffer)
@@ -295,12 +294,12 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id := filepath.Join("images", env.FuncName, uuid.New().String())
+	id := filepath.Join("images", config.Config.FuncName, uuid.New().String())
 
 	for i := range response.Images {
 		if _, err := writeToGS(
 			context.Background(),
-			env.Bucket,
+			config.Config.BucketName,
 			filepath.Join(id, fmt.Sprintf("image-%d.jpg", i)),
 			response.Images[i].Data,
 			true); err != nil {
@@ -312,15 +311,15 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	galleryRequest := new(api.GalleryRequest)
-	galleryRequest.GalleryItems = make([]*api.GalleryItem, len(response.Images))
+	galleryRequest := new(pb.GalleryRequest)
+	galleryRequest.GalleryItems = make([]*pb.GalleryItem, len(response.Images))
 	for i := range response.Images {
-		galleryRequest.GalleryItems[i] = &api.GalleryItem{
+		galleryRequest.GalleryItems[i] = &pb.GalleryItem{
 			Id:         int64(i),
 			FileName:   filepath.Join(id, fmt.Sprintf("image-%d.jpg", i)),
 			Title:      "MNIST GAN image",
 			Caption:    "a randomly generated MNIST image using a neural net based generative adversarial network (GAN)",
-			BucketName: env.Bucket,
+			BucketName: config.Config.BucketName,
 		}
 	}
 
@@ -339,8 +338,8 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 	// https://stackoverflow.com/questions/36345696/golang-http-redirect-with-headers
 	// Hence, we pass it in URL
 	url := "https://" +
-		filepath.Join(env.Domain,
-			env.FuncName,
+		filepath.Join(config.Config.Domain,
+			config.Config.FuncName,
 			route.Gallery,
 		)
 
