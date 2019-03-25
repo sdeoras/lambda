@@ -2,7 +2,7 @@ package gallery
 
 import (
 	"fmt"
-	"gan/src/env"
+	"gan/src/config"
 	"gan/src/jwt"
 	"gan/src/route"
 	"io/ioutil"
@@ -11,12 +11,12 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/sdeoras/api"
+	"github.com/sdeoras/api/pb"
 )
 
 // TestGen_Remote expects google cloud function to be up and running and it tests against that.
 func TestGen_Remote(t *testing.T) {
-	request := new(api.GanRequest)
+	request := new(pb.GanRequest)
 	request.ModelName = "gan-mnist-generator"
 	request.ModelVersion = "v1"
 	request.Count = 2
@@ -26,8 +26,8 @@ func TestGen_Remote(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	req, err := jwt.Manager.Request(http.MethodPost, "https://"+
-		filepath.Join(env.Domain, env.FuncName, route.Gallery),
+	req, err := jwt.Manager.NewHTTPRequest(http.MethodPost, "https://"+
+		filepath.Join(config.Config.Domain, config.Config.FuncName, route.Gallery),
 		nil, b)
 
 	client := &http.Client{}

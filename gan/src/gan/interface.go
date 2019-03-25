@@ -1,7 +1,9 @@
 package gan
 
-import "github.com/sdeoras/api"
+import (
+	"github.com/sdeoras/api/pb"
+)
 
 type Generator interface {
-	Generate(count int) (*api.GanResponse, error)
+	Generate(count int) (*pb.GanResponse, error)
 }

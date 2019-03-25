@@ -9,12 +9,12 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/sdeoras/api"
+	"github.com/sdeoras/api/pb"
 )
 
 // TestSend_Local tests using locally spawned http test server.
 func TestSend_Local(t *testing.T) {
-	sendRequest := &api.EmailRequest{
+	sendRequest := &pb.EmailRequest{
 		FromName:  os.Getenv("EMAIL_FROM_NAME"),
 		FromEmail: os.Getenv("EMAIL_FROM_EMAIL"),
 		ToName:    os.Getenv("EMAIL_TO_NAME"),
@@ -28,7 +28,7 @@ func TestSend_Local(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	req, err := jwt.Manager.Request(http.MethodPost, "/", nil, b)
+	req, err := jwt.Manager.NewHTTPRequest(http.MethodPost, "/", nil, b)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(Send)
@@ -48,7 +48,7 @@ func TestSend_Local(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	sendResponse := new(api.EmailResponse)
+	sendResponse := new(pb.EmailResponse)
 	if err := proto.Unmarshal(b, sendResponse); err != nil {
 		t.Fatal(err)
 	}
@@ -60,7 +60,7 @@ func TestSend_Local(t *testing.T) {
 
 // TestSend_Remote expects google cloud function to be up and running and it tests against that.
 func TestSend_Remote(t *testing.T) {
-	sendRequest := &api.EmailRequest{
+	sendRequest := &pb.EmailRequest{
 		FromName:  os.Getenv("EMAIL_FROM_NAME"),
 		FromEmail: os.Getenv("EMAIL_FROM_EMAIL"),
 		ToName:    os.Getenv("EMAIL_TO_NAME"),
@@ -74,7 +74,7 @@ func TestSend_Remote(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	req, err := jwt.Manager.Request(http.MethodPost, "https://"+os.Getenv("GOOGLE_GCF_DOMAIN")+
+	req, err := jwt.Manager.NewHTTPRequest(http.MethodPost, "https://"+os.Getenv("GOOGLE_GCF_DOMAIN")+
 		"/"+ProjectName+"/"+Name, nil, b)
 	req.Method = http.MethodPost
 
@@ -94,7 +94,7 @@ func TestSend_Remote(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	sendResponse := new(api.EmailResponse)
+	sendResponse := new(pb.EmailResponse)
 	if err := proto.Unmarshal(b, sendResponse); err != nil {
 		t.Fatal(err)
 	}

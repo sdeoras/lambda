@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/sdeoras/api"
+	"github.com/sdeoras/api/pb"
 )
 
 // TestInfer_Remote expects google cloud function to be up and running and it tests against that.
@@ -19,9 +19,9 @@ func TestInfer_Remote(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	request := new(api.InferImageRequest)
-	request.Images = make([]*api.Image, 1)
-	request.Images[0] = new(api.Image)
+	request := new(pb.InferImageRequest)
+	request.Images = make([]*pb.Image, 1)
+	request.Images[0] = new(pb.Image)
 	request.Images[0].Name = "xyz"
 	request.Images[0].Data = b
 	request.ModelName = "garage-door-checker"
@@ -32,7 +32,7 @@ func TestInfer_Remote(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	req, err := jwt.Manager.Request(http.MethodPost, "https://"+os.Getenv("GOOGLE_GCF_DOMAIN")+
+	req, err := jwt.Manager.NewHTTPRequest(http.MethodPost, "https://"+os.Getenv("GOOGLE_GCF_DOMAIN")+
 		"/"+ProjectName+"/"+Name, nil, b)
 	req.Method = http.MethodPost
 
@@ -52,7 +52,7 @@ func TestInfer_Remote(t *testing.T) {
 		t.Fatalf("%s:%s. Mesg:%s", "expected status 200 OK, got", resp.Status, string(b))
 	}
 
-	response := new(api.InferImageResponse)
+	response := new(pb.InferImageResponse)
 	if err := proto.Unmarshal(b, response); err != nil {
 		t.Fatal(err)
 	}

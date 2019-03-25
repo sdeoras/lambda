@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 
 	"github.com/gogo/protobuf/proto"
-	"github.com/sdeoras/api"
+	"github.com/sdeoras/api/pb"
 	ganop "github.com/sdeoras/comp/gan"
 	"github.com/sdeoras/comp/gan/ganMnist"
 )
@@ -32,7 +32,7 @@ func NewGenerator(model string) (gan.Generator, error) {
 		return nil, err
 	}
 
-	cp := new(api.Checkpoint)
+	cp := new(pb.Checkpoint)
 	if err := proto.Unmarshal(b, cp); err != nil {
 		return nil, err
 	}
@@ -45,17 +45,17 @@ func NewGenerator(model string) (gan.Generator, error) {
 }
 
 // Generate implements GAN generator interface
-func (g *generator) Generate(count int) (*api.GanResponse, error) {
+func (g *generator) Generate(count int) (*pb.GanResponse, error) {
 	bs, err := g.op.Generate(count)
 	if err != nil {
 		return nil, err
 	}
 
-	out := new(api.GanResponse)
-	out.Images = make([]*api.Image, len(bs))
+	out := new(pb.GanResponse)
+	out.Images = make([]*pb.Image, len(bs))
 
 	for i := range bs {
-		out.Images[i] = new(api.Image)
+		out.Images[i] = new(pb.Image)
 		out.Images[i].Data = bs[i]
 	}
 
