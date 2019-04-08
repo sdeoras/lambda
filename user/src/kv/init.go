@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"sync"
 	"user/src/config"
 
 	"github.com/sdeoras/kv"
@@ -14,16 +15,29 @@ var (
 )
 
 var (
-	Db kv.KV
-	//once sync.Once
+	kvdb kv.KV
+	once sync.Once
 )
 
-func init() {
-	var err error
-	Db, _, err = kv.NewDataStoreKv(context.Background(),
-		os.Getenv("GCP_PROJECT"), nameSpace)
-	if err != nil {
-		panic(fmt.Sprintf("v8:%v:%s:%s", err, config.Config.ProjectId,
-			os.Getenv("GCP_PROJECT")))
-	}
+// Kv should be called to access instance since it is being initialized.
+// Using init() func to initialize does not seem to work when env vars
+// are required.
+func Kv() kv.KV {
+	once.Do(func() {
+		var err error
+		projectID, ok := os.LookupEnv("GCP_PROJECT")
+		if !ok {
+			panic("GCP_PROJECT env var not set")
+		}
+
+		kvdb, _, err = kv.NewDataStoreKv(context.Background(),
+			projectID, nameSpace)
+		if err != nil {
+			mesg := fmt.Sprintf("%v:%s:%s", err, config.Config.ProjectId,
+				os.Getenv("GCP_PROJECT"))
+			panic(mesg)
+		}
+	})
+
+	return kvdb
 }

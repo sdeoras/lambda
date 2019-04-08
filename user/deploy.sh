@@ -26,17 +26,7 @@ gcloud functions deploy ${NAME} \
     --runtime=go111 \
     --memory=2048MB \
     --set-env-vars=JWT_SECRET_KEY="${JWT_SECRET_KEY}" \
-    --set-env-vars=GOOGLE_PROJECT_ID="${PROJECT}" \
     --set-env-vars=GOOGLE_GCF_DOMAIN="${GOOGLE_GCF_DOMAIN}" \
-    --set-env-vars=GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID}" \
-    --set-env-vars=GOOGLE_CLIENT_SECRET="${GOOGLE_CLIENT_SECRET}" \
-    --set-env-vars=GCLOUD_PROJECT_NAME="${PROJECT}" \
-    --set-env-vars=SENDGRID_API_KEY="${SENDGRID_API_KEY}" \
-    --set-env-vars=EMAIL_FROM_NAME="${EMAIL_FROM_NAME}" \
-    --set-env-vars=EMAIL_FROM_EMAIL="${EMAIL_FROM_EMAIL}" \
-    --set-env-vars=EMAIL_TO_NAME="${EMAIL_TO_NAME}" \
-    --set-env-vars=EMAIL_TO_EMAIL="${EMAIL_TO_EMAIL}" \
-    --set-env-vars=CLOUD_FUNCTIONS_BUCKET="${CLOUD_FUNCTIONS_BUCKET}" \
     --source=gs://${CLOUD_FUNCTIONS_BUCKET}/payload-${NAME}.zip
 
 # do health checks on all services
