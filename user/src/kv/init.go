@@ -1,27 +1,29 @@
 package kv
 
 import (
-	"sync"
+	"context"
+	"fmt"
+	"os"
+	"user/src/config"
 
 	"github.com/sdeoras/kv"
 )
 
 var (
-	fileName  = "/tmp/bolt.db"
 	nameSpace = "userProfile"
 )
 
 var (
-	Db   kv.KV
-	once sync.Once
+	Db kv.KV
+	//once sync.Once
 )
 
 func init() {
-	once.Do(func() {
-		var err error
-		Db, _, err = kv.NewBoltKv(fileName, nameSpace)
-		if err != nil {
-			panic(err)
-		}
-	})
+	var err error
+	Db, _, err = kv.NewDataStoreKv(context.Background(),
+		os.Getenv("GCP_PROJECT"), nameSpace)
+	if err != nil {
+		panic(fmt.Sprintf("v8:%v:%s:%s", err, config.Config.ProjectId,
+			os.Getenv("GCP_PROJECT")))
+	}
 }
