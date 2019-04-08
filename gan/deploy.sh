@@ -47,11 +47,6 @@ gcloud functions deploy ${NAME} \
     --set-env-vars=GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID}" \
     --set-env-vars=GOOGLE_CLIENT_SECRET="${GOOGLE_CLIENT_SECRET}" \
     --set-env-vars=GCLOUD_PROJECT_NAME="${PROJECT}" \
-    --set-env-vars=SENDGRID_API_KEY="${SENDGRID_API_KEY}" \
-    --set-env-vars=EMAIL_FROM_NAME="${EMAIL_FROM_NAME}" \
-    --set-env-vars=EMAIL_FROM_EMAIL="${EMAIL_FROM_EMAIL}" \
-    --set-env-vars=EMAIL_TO_NAME="${EMAIL_TO_NAME}" \
-    --set-env-vars=EMAIL_TO_EMAIL="${EMAIL_TO_EMAIL}" \
     --set-env-vars=CLOUD_FUNCTIONS_BUCKET="${CLOUD_FUNCTIONS_BUCKET}" \
     --source=gs://${CLOUD_FUNCTIONS_BUCKET}/payload-${NAME}.zip
 

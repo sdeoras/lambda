@@ -48,7 +48,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := kv.Db.Set(request.UserMeta.UserName, b); err != nil {
+	if err := kv.Kv().Set(request.UserMeta.UserName, b); err != nil {
 		http.Error(w,
 			fmt.Sprintf("%v:error storing user info in kvdb:%v",
 				http.StatusInternalServerError, err),
@@ -94,7 +94,7 @@ func Query(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	val, err := kv.Db.Get(request.UserMeta.UserName)
+	val, err := kv.Kv().Get(request.UserMeta.UserName)
 	if err != nil {
 		http.Error(w,
 			fmt.Sprintf("%v:could not get user info:%v",
