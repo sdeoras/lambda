@@ -18,8 +18,8 @@ import (
 )
 
 func TestRegister(t *testing.T) {
-	if len(config.Config.Domain) == 0 ||
-		len(config.Config.FuncName) == 0 {
+	if len(config.Config().Domain) == 0 ||
+		len(config.Config().FuncName) == 0 {
 		t.Fatal("not all env vars set properly")
 	}
 
@@ -43,8 +43,8 @@ func TestRegister(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	req, err := jwt.Manager.NewHTTPRequest(http.MethodPost, "https://"+
-		filepath.Join(config.Config.Domain, config.Config.FuncName, route.Register),
+	req, err := jwt.Manager().NewHTTPRequest(http.MethodPost, "https://"+
+		filepath.Join(config.Config().Domain, config.Config().FuncName, route.Register),
 		nil, b)
 
 	client := &http.Client{}
@@ -75,8 +75,8 @@ func TestRegister(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	req, err = jwt.Manager.NewHTTPRequest(http.MethodPost, "https://"+
-		filepath.Join(config.Config.Domain, config.Config.FuncName, route.Query),
+	req, err = jwt.Manager().NewHTTPRequest(http.MethodPost, "https://"+
+		filepath.Join(config.Config().Domain, config.Config().FuncName, route.Query),
 		nil, b)
 
 	client = &http.Client{}
@@ -111,8 +111,8 @@ func TestRegister(t *testing.T) {
 }
 
 func TestQuery(t *testing.T) {
-	if len(config.Config.Domain) == 0 ||
-		len(config.Config.FuncName) == 0 {
+	if len(config.Config().Domain) == 0 ||
+		len(config.Config().FuncName) == 0 {
 		t.Fatal("not all env vars set properly")
 	}
 
@@ -128,8 +128,8 @@ func TestQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	req, err := jwt.Manager.NewHTTPRequest(http.MethodPost, "https://"+
-		filepath.Join(config.Config.Domain, config.Config.FuncName, route.Query),
+	req, err := jwt.Manager().NewHTTPRequest(http.MethodPost, "https://"+
+		filepath.Join(config.Config().Domain, config.Config().FuncName, route.Query),
 		nil, b)
 
 	client := &http.Client{}

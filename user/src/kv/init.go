@@ -19,10 +19,8 @@ var (
 	once sync.Once
 )
 
-// Kv should be called to access instance since it is being initialized.
-// Using init() func to initialize does not seem to work when env vars
-// are required.
-func Kv() kv.KV {
+// initialize initializes kvdb instance once per lifetime
+func initialize() {
 	once.Do(func() {
 		var err error
 		projectID, ok := os.LookupEnv("GCP_PROJECT")
@@ -33,11 +31,17 @@ func Kv() kv.KV {
 		kvdb, _, err = kv.NewDataStoreKv(context.Background(),
 			projectID, nameSpace)
 		if err != nil {
-			mesg := fmt.Sprintf("%v:%s:%s", err, config.Config.ProjectId,
+			mesg := fmt.Sprintf("%v:%s:%s", err, config.Config().ProjectId,
 				os.Getenv("GCP_PROJECT"))
 			panic(mesg)
 		}
 	})
+}
 
+// KV should be called to access instance since it is being initialized.
+// Using init() func to initialize does not seem to work when env vars
+// are required.
+func KV() kv.KV {
+	initialize()
 	return kvdb
 }

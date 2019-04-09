@@ -8,13 +8,24 @@ import (
 
 var (
 	once sync.Once
-	Out  *log.Logger
-	Err  *log.Logger
+	out  *log.Logger
+	err  *log.Logger
 )
 
-func init() {
+// initialize initializes loggers once per lifetime
+func initialize() {
 	once.Do(func() {
-		Out = log.New(os.Stdout, "", 0)
-		Err = log.New(os.Stderr, "", 0)
+		out = log.New(os.Stdout, "", 0)
+		err = log.New(os.Stderr, "", 0)
 	})
+}
+
+func Stdout() *log.Logger {
+	initialize()
+	return out
+}
+
+func Stderr() *log.Logger {
+	initialize()
+	return err
 }

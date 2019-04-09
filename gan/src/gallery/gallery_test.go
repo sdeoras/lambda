@@ -26,8 +26,8 @@ func TestGen_Remote(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	req, err := jwt.Manager.NewHTTPRequest(http.MethodPost, "https://"+
-		filepath.Join(config.Config.Domain, config.Config.FuncName, route.Gallery),
+	req, err := jwt.Manager().NewHTTPRequest(http.MethodPost, "https://"+
+		filepath.Join(config.Config().Domain, config.Config().FuncName, route.Gallery),
 		nil, b)
 
 	client := &http.Client{}

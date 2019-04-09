@@ -73,10 +73,10 @@ func writeToGS(ctx context.Context, bucketName, fileName string, buffer []byte, 
 func copyModelIfNotExists(ctx context.Context, modelName, version string) error {
 	localFolder := filepath.Join(toolModels, modelName, version)
 	if _, err := os.Stat(localFolder); err == nil {
-		log.Out.Println("models found in tmp")
+		log.Stdout().Println("models found in tmp")
 		return nil
 	} else if os.IsNotExist(err) {
-		log.Out.Println("models not found in tmp")
+		log.Stdout().Println("models not found in tmp")
 
 		if err := os.MkdirAll(localFolder, 0755); err != nil {
 			return err
@@ -87,7 +87,7 @@ func copyModelIfNotExists(ctx context.Context, modelName, version string) error 
 			return err
 		}
 
-		bucket := client.Bucket(config.Config.BucketName)
+		bucket := client.Bucket(config.Config().BucketName)
 
 		obj := bucket.Object(filepath.Join(modelDir, modelName, version, checkpointFile))
 		r, err := obj.NewReader(ctx)
@@ -117,8 +117,8 @@ func GenerateDriver(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		mesg := err.Error()
 		url := "https://" + filepath.Join(
-			config.Config.Domain,
-			config.Config.FuncName,
+			config.Config().Domain,
+			config.Config().FuncName,
 			route.Root,
 		)
 		req, err := http.NewRequest(http.MethodGet, url, nil)
@@ -162,12 +162,12 @@ func GenerateDriver(w http.ResponseWriter, r *http.Request) {
 	// https://stackoverflow.com/questions/36345696/golang-http-redirect-with-headers
 	// Hence, we pass it in URL
 	url := "https://" + filepath.Join(
-		config.Config.Domain,
-		config.Config.FuncName,
+		config.Config().Domain,
+		config.Config().FuncName,
 		route.Gallery,
 	)
 
-	req, err := jwt.Manager.NewHTTPRequest(http.MethodPost, url, nil, b)
+	req, err := jwt.Manager().NewHTTPRequest(http.MethodPost, url, nil, b)
 	if err != nil {
 		http.Error(w,
 			fmt.Sprintf("%v:could not successfull create http request:%v",
@@ -182,7 +182,7 @@ func GenerateDriver(w http.ResponseWriter, r *http.Request) {
 // GenerateImages is a GAN based image generator
 func GenerateImages(w http.ResponseWriter, r *http.Request) {
 	// validate input request
-	if err := jwt.Manager.Validate(r); err != nil {
+	if err := jwt.Manager().Validate(r); err != nil {
 		http.Error(w,
 			fmt.Sprintf("%v:%s", http.StatusBadRequest, err.Error()),
 			http.StatusBadRequest)
@@ -199,7 +199,7 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check env var.
-	if len(config.Config.BucketName) <= 0 {
+	if len(config.Config().BucketName) <= 0 {
 		http.Error(w,
 			fmt.Sprintf("%v:%s", http.StatusInternalServerError,
 				"env var for GCS bucket name is not set"),
@@ -294,12 +294,12 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id := filepath.Join("images", config.Config.FuncName, uuid.New().String())
+	id := filepath.Join("images", config.Config().FuncName, uuid.New().String())
 
 	for i := range response.Images {
 		if _, err := writeToGS(
 			context.Background(),
-			config.Config.BucketName,
+			config.Config().BucketName,
 			filepath.Join(id, fmt.Sprintf("image-%d.jpg", i)),
 			response.Images[i].Data,
 			true); err != nil {
@@ -319,7 +319,7 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 			FileName:   filepath.Join(id, fmt.Sprintf("image-%d.jpg", i)),
 			Title:      "MNIST GAN image",
 			Caption:    "a randomly generated MNIST image using a neural net based generative adversarial network (GAN)",
-			BucketName: config.Config.BucketName,
+			BucketName: config.Config().BucketName,
 		}
 	}
 
@@ -338,12 +338,12 @@ func GenerateImages(w http.ResponseWriter, r *http.Request) {
 	// https://stackoverflow.com/questions/36345696/golang-http-redirect-with-headers
 	// Hence, we pass it in URL
 	url := "https://" +
-		filepath.Join(config.Config.Domain,
-			config.Config.FuncName,
+		filepath.Join(config.Config().Domain,
+			config.Config().FuncName,
 			route.Gallery,
 		)
 
-	req, err := jwt.Manager.NewHTTPRequest(http.MethodPost, url, nil, b)
+	req, err := jwt.Manager().NewHTTPRequest(http.MethodPost, url, nil, b)
 	if err != nil {
 		http.Error(w,
 			fmt.Sprintf("%v:could not successfull create http request:%v",
