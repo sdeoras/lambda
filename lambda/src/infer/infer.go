@@ -67,10 +67,10 @@ func writeToGS(ctx context.Context, bucketName, fileName string, buffer []byte) 
 func copyModelIfNotExists(ctx context.Context, modelName, version string) error {
 	localFolder := filepath.Join(imtoolModels, modelName, version)
 	if _, err := os.Stat(localFolder); err == nil {
-		log.Out.Println("models found in tmp")
+		log.Stdout().Println("models found in tmp")
 		return nil
 	} else if os.IsNotExist(err) {
-		log.Out.Println("models not found in tmp")
+		log.Stdout().Println("models not found in tmp")
 
 		if err := os.MkdirAll(localFolder, 0755); err != nil {
 			return err
@@ -81,7 +81,7 @@ func copyModelIfNotExists(ctx context.Context, modelName, version string) error 
 			return err
 		}
 
-		bucket := client.Bucket(config.Config.BucketName)
+		bucket := client.Bucket(config.Config().BucketName)
 
 		obj := bucket.Object(filepath.Join(modelDir, modelName, version, graphFile))
 		r, err := obj.NewReader(ctx)
@@ -126,7 +126,7 @@ func copyModelIfNotExists(ctx context.Context, modelName, version string) error 
 // in a proto file.
 func InferImage(w http.ResponseWriter, r *http.Request) {
 	// validate input request
-	err := jwt.Manager.Validate(r)
+	err := jwt.Manager().Validate(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -141,7 +141,7 @@ func InferImage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check env var.
-	if len(config.Config.BucketName) <= 0 {
+	if len(config.Config().BucketName) <= 0 {
 		http.Error(w,
 			"env var for GCS bucket is not set",
 			http.StatusInternalServerError)

@@ -3,13 +3,12 @@ module gan
 go 1.12
 
 require (
-	cloud.google.com/go v0.37.1
+	cloud.google.com/go v0.37.4
 	github.com/gogo/protobuf v1.2.1
 	github.com/golang/protobuf v1.3.1
 	github.com/google/uuid v1.1.1
-	github.com/kr/pretty v0.1.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/sdeoras/api v0.1.4
+	github.com/sdeoras/api v0.1.6
 	github.com/sdeoras/comp v0.1.7
 	github.com/sdeoras/health v0.1.10
 	github.com/sdeoras/httprouter v0.1.0

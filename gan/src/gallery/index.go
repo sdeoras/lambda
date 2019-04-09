@@ -15,7 +15,7 @@ import (
 
 func Show(w http.ResponseWriter, r *http.Request) {
 	// validate input request
-	err := jwt.Manager.Validate(r)
+	err := jwt.Manager().Validate(r)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("%v:%v",
 			http.StatusBadRequest, err),

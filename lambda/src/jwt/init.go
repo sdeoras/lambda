@@ -3,20 +3,28 @@ package jwt
 import (
 	"lambda/src/config"
 	"sync"
+	"time"
 
 	"github.com/sdeoras/jwt"
 )
 
 var (
 	once    sync.Once
-	Manager jwt.Manager
+	manager jwt.Manager
 )
 
-// init initializes secret key based on environment variable and creates a new
-// jwt token Manager. It also registers some functions to route the traffic to.
-func init() {
+// initialize initializes manager instance once per lifetime
+func initialize() {
 	once.Do(func() {
-		Manager = jwt.NewManager(config.Config.JwtSecret,
-			jwt.EnforceExpiration())
+		manager = jwt.NewManager(config.Config().JwtSecret,
+			jwt.EnforceExpiration(),      // on the server side ensure jwt token has expiry
+			jwt.SetLifeSpan(time.Minute), // on the client side put expiry in jwt token
+		)
 	})
+}
+
+// Manager provides access to the instance
+func Manager() jwt.Manager {
+	initialize()
+	return manager
 }

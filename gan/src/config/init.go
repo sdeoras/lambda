@@ -8,12 +8,18 @@ import (
 )
 
 var (
-	once   sync.Once
-	Config *pb.ConfigResponse
+	once sync.Once
+	conf *pb.ConfigResponse
 )
 
-func init() {
+// initialize initializes config once per lifetime
+func initialize() {
 	once.Do(func() {
-		Config = config.NewConfigFromEnv()
+		conf = config.NewConfigFromEnv()
 	})
+}
+
+func Config() *pb.ConfigResponse {
+	initialize()
+	return conf
 }

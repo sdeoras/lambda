@@ -13,7 +13,7 @@ import (
 
 func Register(w http.ResponseWriter, r *http.Request) {
 	// validate input request
-	if err := jwt.Manager.Validate(r); err != nil {
+	if err := jwt.Manager().Validate(r); err != nil {
 		http.Error(w,
 			fmt.Sprintf("%v:%s", http.StatusBadRequest, err.Error()),
 			http.StatusBadRequest)
@@ -48,7 +48,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := kv.Kv().Set(request.UserMeta.UserName, b); err != nil {
+	if err := kv.KV().Set(request.UserMeta.UserName, b); err != nil {
 		http.Error(w,
 			fmt.Sprintf("%v:error storing user info in kvdb:%v",
 				http.StatusInternalServerError, err),
@@ -59,7 +59,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 func Query(w http.ResponseWriter, r *http.Request) {
 	// validate input request
-	if err := jwt.Manager.Validate(r); err != nil {
+	if err := jwt.Manager().Validate(r); err != nil {
 		http.Error(w,
 			fmt.Sprintf("%v:%s", http.StatusBadRequest, err.Error()),
 			http.StatusBadRequest)
@@ -94,7 +94,7 @@ func Query(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	val, err := kv.Kv().Get(request.UserMeta.UserName)
+	val, err := kv.KV().Get(request.UserMeta.UserName)
 	if err != nil {
 		http.Error(w,
 			fmt.Sprintf("%v:could not get user info:%v",
