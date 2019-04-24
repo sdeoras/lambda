@@ -36,12 +36,13 @@ zip -r payload-${NAME}.zip lambda.go src vendor
 gsutil cp payload-${NAME}.zip gs://${CLOUD_FUNCTIONS_BUCKET}
 rm -rf vendor payload-${NAME}.zip
 
-gcloud functions deploy ${NAME} \
+gcloud beta functions deploy ${NAME} \
     --region=${REGION} \
     --trigger-http \
     --entry-point=Lambda \
     --runtime=go111 \
     --memory=2048MB \
+    --max-instances=10 \
     --set-env-vars=JWT_SECRET_KEY="${JWT_SECRET_KEY}" \
     --set-env-vars=GOOGLE_GCF_DOMAIN="${GOOGLE_GCF_DOMAIN}" \
     --set-env-vars=GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID}" \
